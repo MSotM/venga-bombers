@@ -6,18 +6,27 @@
 
 /* World ------------------------------------------------------------------- */
 
-#define TILE_TYPE_EMPTY 0
-#define TILE_TYPE_SOLID 1
-#define TILE_TYPE_STATIC 2
+#define TILE_MASK_TYPE               0b00000011
+#define TILE_MASK_UPGRADE            0b00001100
+#define TILE_MASK_CONTAINS_BOMB      0b00010000
+#define TILE_MASK_CONTAINS_EXPLOSION 0b00100000
+#define TILE_MASK_CONTAINS_PLAYER_1  0b01000000
+#define TILE_MASK_CONTAINS_PLAYER_2  0b10000000
 
-#define TILE_UPGRADE_NONE 0
-#define TILE_UPGRADE_RANGE 1
-#define TILE_UPGRADE_BOMBS 2
-#define TILE_UPGRADE_SPEED 3
+typedef enum {
+  TILE_TYPE_EMPTY  = 0,
+  TILE_TYPE_SOLID  = 1,
+  TILE_TYPE_STATIC = 2
+} tile_type_t;
+
+typedef enum {
+  TILE_UPGRADE_NONE  = (0 << 2),
+  TILE_UPGRADE_RANGE = (1 << 2),
+  TILE_UPGRADE_BOMBS = (2 << 2),
+  TILE_UPGRADE_SPEED = (3 << 2)
+} tile_upgrade_t;
 
 typedef uint8_t tile_t;
-typedef uint8_t tile_type_t;
-typedef uint8_t tile_upgrade_t;
 
 inline tile_type_t tile_type(tile_t tile);
 inline tile_upgrade_t tile_upgrade(tile_t tile);
