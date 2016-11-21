@@ -29,13 +29,17 @@ typedef enum {
 typedef uint8_t tile_t;
 
 inline tile_type_t tile_type(tile_t tile);
+inline void tile_set_type(tile_t *tile, tile_type_t type);
 inline tile_upgrade_t tile_upgrade(tile_t tile);
+inline void tile_set_upgrade(tile_t *tile, tile_upgrade_t upgrade);
 inline bool tile_contains_bomb(tile_t tile);
+inline void tile_set_contains_bomb(tile_t *tile, bool contains_bomb);
 inline bool tile_contains_explosion(tile_t tile);
+inline void tile_set_contains_explosion(tile_t *tile, bool contains_explosion);
 inline bool tile_contains_player_1(tile_t tile);
+inline void tile_set_contains_player_1(tile_t *tile, bool contains_player_1);
 inline bool tile_contains_player_2(tile_t tile);
-
-// TODO: Tile update functions
+inline void tile_set_contains_player_2(tile_t *tile, bool contains_player_2);
 
 typedef struct {
   uint8_t width;
