@@ -19,6 +19,7 @@ void init_players() {
   p1->damage_countdown = 0;
   p1->movement_countdown = 0;
   p1->movement_default_countdown = PLAYER_DEFAULT_MOVEMENT_COUNTDOWN;
+  p1->explosion_range = PLAYER_DEFAULT_EXPLOSION_RANGE;
 
   p2->player_id = 2;
   p2->x = PLAYER_2_DEFAULT_X;
@@ -27,6 +28,7 @@ void init_players() {
   p2->damage_countdown = 0;
   p2->movement_countdown = 0;
   p2->movement_default_countdown = PLAYER_DEFAULT_MOVEMENT_COUNTDOWN;
+  p2->explosion_range = PLAYER_DEFAULT_EXPLOSION_RANGE;
 }
 
 static void update_player(player_t *player) {
