@@ -44,6 +44,7 @@ typedef struct {
   tile_t tiles[WORLD_WIDTH * WORLD_HEIGHT];
 } world_t;
 
+void init_world();
 void update_world();
 tile_t *world_tile(uint8_t x, uint8_t y);
 

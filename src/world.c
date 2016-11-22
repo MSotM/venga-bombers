@@ -5,12 +5,9 @@
 
 static world_t *world = NULL;
 
-static world_t *get_world() {
-  if (world == NULL) {
-    world = malloc(sizeof(world_t));
-  }
-
-  return world;
+void init_world() {
+  world = malloc(sizeof(world_t));
+  init_players();
 }
 
 void update_world() {
@@ -20,8 +17,6 @@ void update_world() {
 }
 
 tile_t *world_tile(uint8_t x, uint8_t y) {
-  world_t *world = get_world();
-
   if (x >= WORLD_WIDTH || y >= WORLD_HEIGHT) {
     return NULL;
   }
