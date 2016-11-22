@@ -6,7 +6,7 @@
 static world_t *world = NULL;
 
 void init_world() {
-  world = malloc(sizeof(world_t));
+  world = calloc(sizeof(world_t), 1);
   init_players();
 }
 
