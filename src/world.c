@@ -1,4 +1,34 @@
+#include <stdlib.h>
 #include "game.h"
+
+/* World ------------------------------------------------------------------- */
+
+static world_t *world = NULL;
+
+static world_t *get_world() {
+  if (world == NULL) {
+    world = malloc(sizeof(world_t));
+  }
+
+  return world;
+}
+
+void update_world() {
+  update_explosions();
+  update_bombs();
+}
+
+tile_t *world_tile(uint8_t x, uint8_t y) {
+  world_t *world = get_world();
+
+  if (x >= WORLD_WIDTH || y >= WORLD_HEIGHT) {
+    return NULL;
+  }
+
+  return &world->tiles[y * WORLD_WIDTH + x];
+}
+
+/* Tile accessors ---------------------------------------------------------- */
 
 tile_type_t tile_type(tile_t tile) {
   return tile & TILE_MASK_TYPE;

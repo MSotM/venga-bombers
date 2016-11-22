@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/* World ------------------------------------------------------------------- */
+/* Tile -------------------------------------------------------------------- */
 
 #define TILE_MASK_TYPE               0b00000011
 #define TILE_MASK_UPGRADE            0b00001100
@@ -41,11 +41,17 @@ void tile_set_contains_player_1(tile_t *tile, bool contains_player_1);
 bool tile_contains_player_2(tile_t tile);
 void tile_set_contains_player_2(tile_t *tile, bool contains_player_2);
 
+/* World ------------------------------------------------------------------- */
+
+#define WORLD_WIDTH  32
+#define WORLD_HEIGHT 24
+
 typedef struct {
-  uint8_t width;
-  uint8_t height;
-  tile_t tiles[];
+  tile_t tiles[WORLD_WIDTH * WORLD_HEIGHT];
 } world_t;
+
+void update_world();
+tile_t *world_tile(uint8_t x, uint8_t y);
 
 /* Player ------------------------------------------------------------------ */
 
