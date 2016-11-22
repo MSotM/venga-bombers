@@ -121,4 +121,8 @@ void queue_event(event_type_t event_type, uint8_t player_id);
 event_t *dequeue_event();
 void free_event(event_t *event);
 
+/* Event handling ---------------------------------------------------------- */
+
+void handle_events();
+
 #endif /* GAME_H */
