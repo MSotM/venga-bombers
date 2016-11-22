@@ -72,6 +72,7 @@ typedef struct {
 
 void init_players();
 void update_players();
+bool player_move(player_t *player, int8_t dx, int8_t dy);
 
 /* Bomb -------------------------------------------------------------------- */
 

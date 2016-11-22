@@ -44,3 +44,18 @@ void update_players() {
   update_player(&players[0]);
   update_player(&players[1]);
 }
+
+bool player_move(player_t *player, int8_t dx, int8_t dy) {
+  tile_t *next_tile = world_tile(player->x + dx, player->y + dy);
+
+  if (!next_tile)                                return false;
+  if (tile_contains_bomb(*next_tile))            return false;
+  if (tile_type(*next_tile) == TILE_TYPE_STATIC) return false;
+  if (tile_type(*next_tile) == TILE_TYPE_SOLID)  return false;
+
+  player->x = player->x + dx;
+  player->y = player->y + dy;
+  player->movement_countdown = player->movement_default_countdown;
+
+  return true;
+}
