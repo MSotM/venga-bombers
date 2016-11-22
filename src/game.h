@@ -55,6 +55,16 @@ tile_t *world_tile(uint8_t x, uint8_t y);
 
 /* Player ------------------------------------------------------------------ */
 
+#define PLAYER_COUNT                      2
+#define PLAYER_DAMAGE_COUNTDOWN           30
+
+#define PLAYER_DEFAULT_MOVEMENT_COUNTDOWN 10
+#define PLAYER_DEFAULT_LIVES              3
+#define PLAYER_1_DEFAULT_X                1
+#define PLAYER_1_DEFAULT_Y                1
+#define PLAYER_2_DEFAULT_X                30
+#define PLAYER_2_DEFAULT_Y                24
+
 typedef struct {
   uint8_t player_id;
   uint8_t x;
@@ -65,6 +75,9 @@ typedef struct {
   uint8_t movement_default_countdown;
   uint8_t explosion_range;
 } player_t;
+
+void init_players();
+void update_players();
 
 /* Bomb -------------------------------------------------------------------- */
 
