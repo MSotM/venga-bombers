@@ -101,4 +101,24 @@ typedef struct {
 void update_explosions();
 void activate_explosion(uint8_t x, uint8_t y);
 
+/* Events ------------------------------------------------------------------ */
+
+typedef enum {
+  EVENT_TYPE_NONE       = 0,
+  EVENT_TYPE_MOVE_UP    = 1,
+  EVENT_TYPE_MOVE_RIGHT = 2,
+  EVENT_TYPE_MOVE_DOWN  = 3,
+  EVENT_TYPE_MOVE_LEFT  = 4,
+  EVENT_TYPE_PLACE_BOMB = 5
+} event_type_t;
+
+typedef struct {
+  event_type_t event_type;
+  uint8_t player_id;
+} event_t;
+
+void queue_event(event_type_t event_type, uint8_t player_id);
+event_t *dequeue_event();
+void free_event(event_t *event);
+
 #endif /* GAME_H */
