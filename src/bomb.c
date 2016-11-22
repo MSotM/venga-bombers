@@ -46,8 +46,8 @@ bomb_t *place_bomb(player_t *player) {
 
 static void activate_explosion_line(uint8_t x,
                                     uint8_t y,
-                                    uint8_t dx,
-                                    uint8_t dy,
+                                    int8_t dx,
+                                    int8_t dy,
                                     uint8_t range) {
   size_t i;
   tile_t *tile;
