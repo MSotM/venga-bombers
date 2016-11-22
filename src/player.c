@@ -53,7 +53,11 @@ void update_players() {
 }
 
 bool player_move(player_t *player, int8_t dx, int8_t dy) {
-  tile_t *next_tile = world_tile(player->x + dx, player->y + dy);
+  tile_t *next_tile;
+
+  if (player->movement_countdown != 0) return false;
+
+  next_tile = world_tile(player->x + dx, player->y + dy);
 
   if (!next_tile)                                return false;
   if (tile_contains_bomb(*next_tile))            return false;
