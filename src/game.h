@@ -10,8 +10,6 @@
 #define TILE_MASK_UPGRADE            0b00001100
 #define TILE_MASK_CONTAINS_BOMB      0b00010000
 #define TILE_MASK_CONTAINS_EXPLOSION 0b00100000
-#define TILE_MASK_CONTAINS_PLAYER_1  0b01000000
-#define TILE_MASK_CONTAINS_PLAYER_2  0b10000000
 
 typedef enum {
   TILE_TYPE_EMPTY  = 0,
@@ -36,10 +34,6 @@ bool tile_contains_bomb(tile_t tile);
 void tile_set_contains_bomb(tile_t *tile, bool contains_bomb);
 bool tile_contains_explosion(tile_t tile);
 void tile_set_contains_explosion(tile_t *tile, bool contains_explosion);
-bool tile_contains_player_1(tile_t tile);
-void tile_set_contains_player_1(tile_t *tile, bool contains_player_1);
-bool tile_contains_player_2(tile_t tile);
-void tile_set_contains_player_2(tile_t *tile, bool contains_player_2);
 
 /* World ------------------------------------------------------------------- */
 

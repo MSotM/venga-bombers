@@ -65,21 +65,3 @@ void tile_set_contains_explosion(tile_t *tile, bool explosion) {
   *tile &= ~TILE_MASK_CONTAINS_EXPLOSION;
   if (explosion) *tile |= TILE_MASK_CONTAINS_EXPLOSION;
 }
-
-bool tile_contains_player_1(tile_t tile) {
-  return tile & TILE_MASK_CONTAINS_PLAYER_1;
-}
-
-void tile_set_contains_player_1(tile_t *tile, bool player_1) {
-  *tile &= ~TILE_MASK_CONTAINS_PLAYER_1;
-  if (player_1) *tile |= TILE_MASK_CONTAINS_PLAYER_1;
-}
-
-bool tile_contains_player_2(tile_t tile) {
-  return tile & TILE_MASK_CONTAINS_PLAYER_2;
-}
-
-void tile_set_contains_player_2(tile_t *tile, bool player_2) {
-  *tile &= ~TILE_MASK_CONTAINS_PLAYER_2;
-  if (player_2) *tile |= TILE_MASK_CONTAINS_PLAYER_2;
-}
