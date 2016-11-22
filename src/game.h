@@ -77,7 +77,7 @@ typedef struct {
 
 void update_bombs();
 bomb_t *place_bomb(player_t *player);
-void trigger_bomb(bomb_t* bomb);
+void trigger_bomb(bomb_t *bomb);
 
 /* Explosion --------------------------------------------------------------- */
 
