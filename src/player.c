@@ -3,6 +3,11 @@
 
 static player_t players[PLAYER_COUNT];
 
+player_t *get_player(uint8_t player_id) {
+  /* Players should always be stored at the index player_id - 1 */
+  return &players[player_id - 1];
+}
+
 void init_players() {
   player_t *p1 = &players[0];
   player_t *p2 = &players[1];

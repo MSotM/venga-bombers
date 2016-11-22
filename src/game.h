@@ -70,6 +70,7 @@ typedef struct {
   uint8_t explosion_range;
 } player_t;
 
+player_t *get_player(uint8_t player_id);
 void init_players();
 void update_players();
 bool player_move(player_t *player, int8_t dx, int8_t dy);
