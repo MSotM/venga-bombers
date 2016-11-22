@@ -16,6 +16,7 @@ static world_t *get_world() {
 void update_world() {
   update_explosions();
   update_bombs();
+  update_players();
 }
 
 tile_t *world_tile(uint8_t x, uint8_t y) {
