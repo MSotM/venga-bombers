@@ -58,7 +58,7 @@ tile_t *world_tile(uint8_t x, uint8_t y);
 #define PLAYER_1_DEFAULT_X                1
 #define PLAYER_1_DEFAULT_Y                1
 #define PLAYER_2_DEFAULT_X                30
-#define PLAYER_2_DEFAULT_Y                24
+#define PLAYER_2_DEFAULT_Y                22
 
 typedef struct {
   uint8_t player_id;
