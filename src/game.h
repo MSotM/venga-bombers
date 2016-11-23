@@ -104,7 +104,10 @@ void activate_explosion(uint8_t x, uint8_t y);
 /* Events ------------------------------------------------------------------ */
 
 typedef enum {
-  EVENT_TYPE_NONE,
+  /* Events in the queue that have already been processed will have their event
+     type reset to EVENT_TYPE_PROCESSED. Events of this type are not supposed
+     to be queued using queue_event. */
+  EVENT_TYPE_PROCESSED,
   EVENT_TYPE_MOVE_UP,
   EVENT_TYPE_MOVE_RIGHT,
   EVENT_TYPE_MOVE_DOWN,

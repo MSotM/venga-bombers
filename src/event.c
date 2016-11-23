@@ -26,7 +26,7 @@ event_t *dequeue_event() {
     event = &(events[event_index]);
     event_index = (event_index + 1) % EVENT_COUNT;
 
-    if (event->event_type != EVENT_TYPE_NONE) {
+    if (event->event_type != EVENT_TYPE_PROCESSED) {
       return event;
     }
 
@@ -36,6 +36,6 @@ event_t *dequeue_event() {
 }
 
 void free_event(event_t *event) {
-  event->event_type = EVENT_TYPE_NONE;
+  event->event_type = EVENT_TYPE_PROCESSED;
   event->player_id = 0;
 }

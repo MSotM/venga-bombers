@@ -12,7 +12,7 @@ void handle_events() {
     case EVENT_TYPE_MOVE_DOWN:  player_move(player,  0,  1); break;
     case EVENT_TYPE_MOVE_LEFT:  player_move(player, -1,  0); break;
     case EVENT_TYPE_PLACE_BOMB: place_bomb(player);          break;
-    case EVENT_TYPE_NONE:                                    break;
+    case EVENT_TYPE_PROCESSED:                               break;
     }
 
     free_event(event);
