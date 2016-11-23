@@ -104,12 +104,12 @@ void activate_explosion(uint8_t x, uint8_t y);
 /* Events ------------------------------------------------------------------ */
 
 typedef enum {
-  EVENT_TYPE_NONE       = 0,
-  EVENT_TYPE_MOVE_UP    = 1,
-  EVENT_TYPE_MOVE_RIGHT = 2,
-  EVENT_TYPE_MOVE_DOWN  = 3,
-  EVENT_TYPE_MOVE_LEFT  = 4,
-  EVENT_TYPE_PLACE_BOMB = 5
+  EVENT_TYPE_NONE,
+  EVENT_TYPE_MOVE_UP,
+  EVENT_TYPE_MOVE_RIGHT,
+  EVENT_TYPE_MOVE_DOWN,
+  EVENT_TYPE_MOVE_LEFT,
+  EVENT_TYPE_PLACE_BOMB
 } event_type_t;
 
 typedef struct {
