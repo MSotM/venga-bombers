@@ -11,7 +11,7 @@ static explosion_t *get_explosion(uint8_t x, uint8_t y) {
   size_t i;
   explosion_t *explosion;
   for (i = 0; i < EXPLOSION_COUNT; i++) {
-    explosion = &explosions[i];
+    explosion = &(explosions[i]);
 
     if (explosion->x == x && explosion->y == y) {
       if (explosion->countdown) {
@@ -28,7 +28,7 @@ void update_explosions() {
   int i;
   explosion_t *explosion;
   for (i = 0; i < EXPLOSION_COUNT; i++) {
-    explosion = &explosions[i];
+    explosion = &(explosions[i]);
 
     if (explosion->countdown != 0) {
       explosion->countdown--;
@@ -51,7 +51,7 @@ void activate_explosion(uint8_t x, uint8_t y) {
   if (tile_contains_explosion(*tile)) {
     explosion = get_explosion(x, y);
   } else {
-    explosion = &explosions[next_explosion_index];
+    explosion = &(explosions[next_explosion_index]);
   }
 
   explosion->x = x;

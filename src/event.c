@@ -7,7 +7,7 @@ static event_t events[EVENT_COUNT];
 static uint8_t next_event_index = 0;
 
 void queue_event(event_type_t event_type, uint8_t player_id) {
-  event_t *event = &events[next_event_index];
+  event_t *event = &(events[next_event_index]);
 
   /* We assume the event is unused, so we can just override its values. */
   event->event_type = event_type;
@@ -23,7 +23,7 @@ event_t *dequeue_event() {
   event_t *event;
 
   do {
-    event = &events[event_index];
+    event = &(events[event_index]);
     event_index = (event_index + 1) % EVENT_COUNT;
 
     if (event->event_type != EVENT_TYPE_NONE) {

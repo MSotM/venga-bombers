@@ -11,7 +11,7 @@ void update_bombs() {
   int i;
   bomb_t *bomb;
   for (i = 0; i < BOMB_COUNT; i++) {
-    bomb = &bombs[i];
+    bomb = &(bombs[i]);
 
     if (bomb->player != NULL && --bomb->countdown == 0) {
       trigger_bomb(bomb);
@@ -27,7 +27,7 @@ bomb_t *place_bomb(player_t *player) {
     return NULL;
   }
 
-  bomb = &bombs[next_bomb_index];
+  bomb = &(bombs[next_bomb_index]);
 
   /* We assume the bomb is unused, so we can just override its values. */
   bomb->player = player;

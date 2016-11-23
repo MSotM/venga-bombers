@@ -5,12 +5,12 @@ static player_t players[PLAYER_COUNT];
 
 player_t *get_player(uint8_t player_id) {
   /* Players should always be stored at the index player_id - 1 */
-  return &players[player_id - 1];
+  return &(players[player_id - 1]);
 }
 
 void init_players() {
-  player_t *p1 = &players[0];
-  player_t *p2 = &players[1];
+  player_t *p1 = &(players[0]);
+  player_t *p2 = &(players[1]);
 
   p1->player_id = 1;
   p1->x = PLAYER_1_DEFAULT_X;
@@ -48,8 +48,8 @@ static void update_player(player_t *player) {
 }
 
 void update_players() {
-  update_player(&players[0]);
-  update_player(&players[1]);
+  update_player(&(players[0]));
+  update_player(&(players[1]));
 }
 
 bool player_move(player_t *player, int8_t dx, int8_t dy) {
