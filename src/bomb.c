@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include "game.h"
 
-#define BOMB_COUNT 32
-#define BOMB_DEFAULT_COUNTDOWN 32
-
 static bomb_t bombs[BOMB_COUNT];
 static uint8_t next_bomb_index = 0;
 

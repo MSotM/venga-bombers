@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include "game.h"
 
-#define EXPLOSION_COUNT 128
-#define EXPLOSION_DEFAULT_COUNTDOWN 16
-
 static explosion_t explosions[EXPLOSION_COUNT];
 static uint8_t next_explosion_index = 0;
 

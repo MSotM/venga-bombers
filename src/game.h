@@ -79,6 +79,9 @@ bool player_move(player_t *player, int8_t dx, int8_t dy);
 
 /* Bomb -------------------------------------------------------------------- */
 
+#define BOMB_COUNT 32
+#define BOMB_DEFAULT_COUNTDOWN 32
+
 typedef struct {
   player_t *player;
   uint8_t x;
@@ -91,6 +94,9 @@ bomb_t *place_bomb(player_t *player);
 void trigger_bomb(bomb_t *bomb);
 
 /* Explosion --------------------------------------------------------------- */
+
+#define EXPLOSION_COUNT 128
+#define EXPLOSION_DEFAULT_COUNTDOWN 16
 
 typedef struct {
   uint8_t x;
