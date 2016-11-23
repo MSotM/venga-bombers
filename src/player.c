@@ -12,7 +12,7 @@ void init_players() {
   player_t *p1 = &(players[0]);
   player_t *p2 = &(players[1]);
 
-  p1->player_id = 1;
+  p1->player_id = PLAYER_1_ID;
   p1->x = PLAYER_1_DEFAULT_X;
   p1->y = PLAYER_1_DEFAULT_Y;
   p1->lives = PLAYER_DEFAULT_LIVES;
@@ -21,7 +21,7 @@ void init_players() {
   p1->movement_default_countdown = PLAYER_DEFAULT_MOVEMENT_COUNTDOWN;
   p1->explosion_range = PLAYER_DEFAULT_EXPLOSION_RANGE;
 
-  p2->player_id = 2;
+  p2->player_id = PLAYER_2_ID;
   p2->x = PLAYER_2_DEFAULT_X;
   p2->y = PLAYER_2_DEFAULT_Y;
   p2->lives = PLAYER_DEFAULT_LIVES;
