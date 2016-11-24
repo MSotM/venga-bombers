@@ -40,7 +40,7 @@ static void update_player(player_t *player) {
 
   tile_t *tile = world_tile(player->x, player->y);
 
-  if (tile_contains_explosion(*tile) && player->damage_countdown != 0) {
+  if (tile_contains_explosion(*tile) && player->damage_countdown == 0) {
     player->lives--;
     player->damage_countdown = PLAYER_DAMAGE_COUNTDOWN;
   }
