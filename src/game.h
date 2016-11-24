@@ -275,4 +275,9 @@ void free_event(event_t *event);
  */
 void handle_events();
 
+/* Rendering --------------------------------------------------------------- */
+
+void init_render();
+void render();
+
 #endif /* GAME_H */
