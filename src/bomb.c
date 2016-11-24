@@ -24,6 +24,10 @@ bomb_t *place_bomb(player_t *player) {
     return NULL;
   }
 
+  if (player->bombs_placed >= player->max_bomb_quantity) {
+    return NULL;
+  }
+
   bomb = &(bombs[next_bomb_index]);
 
   /* We assume the bomb is unused, so we can just override its values. */
@@ -32,6 +36,7 @@ bomb_t *place_bomb(player_t *player) {
   bomb->y = player->y;
   bomb->countdown = BOMB_DEFAULT_COUNTDOWN;
 
+  player->bombs_placed++;
   tile_set_contains_bomb(tile, true);
 
   if (++next_bomb_index == BOMB_COUNT) {
@@ -73,6 +78,7 @@ void trigger_bomb(bomb_t *bomb) {
   uint8_t x = bomb->x;
   uint8_t y = bomb->y;
 
+  bomb->player->bombs_placed--;
   tile_set_contains_bomb(world_tile(bomb->x, bomb->y), false);
 
   activate_explosion(x, y);

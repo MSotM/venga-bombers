@@ -121,6 +121,7 @@ typedef struct {
   uint8_t movement_countdown;
   uint8_t movement_default_countdown;
   uint8_t explosion_range;
+  uint8_t bombs_placed;
   uint8_t max_bomb_quantity;
 } player_t;
 
