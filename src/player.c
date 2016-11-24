@@ -20,6 +20,7 @@ void init_players() {
   p1->movement_countdown = 0;
   p1->movement_default_countdown = PLAYER_DEFAULT_MOVEMENT_COUNTDOWN;
   p1->explosion_range = PLAYER_DEFAULT_EXPLOSION_RANGE;
+  p1->max_bomb_quantity = PLAYER_DEFAULT_MAX_BOMB_QUANTITY;
 
   p2->player_id = PLAYER_2_ID;
   p2->x = PLAYER_2_DEFAULT_X;
@@ -29,6 +30,7 @@ void init_players() {
   p2->movement_countdown = 0;
   p2->movement_default_countdown = PLAYER_DEFAULT_MOVEMENT_COUNTDOWN;
   p2->explosion_range = PLAYER_DEFAULT_EXPLOSION_RANGE;
+  p2->max_bomb_quantity = PLAYER_DEFAULT_MAX_BOMB_QUANTITY;
 }
 
 static void update_player(player_t *player) {
@@ -41,6 +43,25 @@ static void update_player(player_t *player) {
   if (tile_contains_explosion(*tile) && player->damage_countdown != 0) {
     player->lives--;
     player->damage_countdown = PLAYER_DAMAGE_COUNTDOWN;
+  }
+
+  switch(tile_upgrade(*tile)) {
+  case TILE_UPGRADE_RANGE:
+      /* double range */
+      player->explosion_range++;
+      break;
+  case TILE_UPGRADE_BOMBS:
+      /* add one bomb quantity */
+      player->max_bomb_quantity++;
+      break;
+  case TILE_UPGRADE_SPEED:
+      /* substract 1 tick */
+      player->movement_default_countdown--;
+      break;
+  case TILE_UPGRADE_NONE:
+  default:
+      /* do nothing */
+      break;
   }
 
   if (player->movement_countdown > 0) player->movement_countdown--;
