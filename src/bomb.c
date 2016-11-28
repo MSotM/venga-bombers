@@ -20,7 +20,7 @@ bomb_t *place_bomb(player_t *player) {
   bomb_t *bomb;
   tile_t *tile = world_tile(player->x, player->y);
 
-  if (tile_contains_bomb(*tile)) {
+  if (tile_contains_bomb(*tile) || !player->lives) {
     return NULL;
   }
 
