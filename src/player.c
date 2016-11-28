@@ -47,24 +47,22 @@ static void update_player(player_t *player) {
 
   switch(tile_upgrade(*tile)) {
   case TILE_UPGRADE_RANGE:
-      /* double range */
-      player->explosion_range++;
-      break;
+    player->explosion_range++;
+    break;
   case TILE_UPGRADE_BOMBS:
-      /* add one bomb quantity */
-      player->max_bomb_quantity++;
-      break;
+    player->max_bomb_quantity++;
+    break;
   case TILE_UPGRADE_SPEED:
-      /* substract 1 tick if possible */
-      if (player->movement_default_countdown >
-          PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN) {
-        player->movement_default_countdown--;
-      }
-      break;
+    /* substract 1 tick if possible */
+    if (player->movement_default_countdown >
+        PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN) {
+      player->movement_default_countdown--;
+    }
+    break;
   case TILE_UPGRADE_NONE:
   default:
-      /* do nothing */
-      break;
+    /* do nothing */
+    break;
   }
 
   if (player->movement_countdown > 0) player->movement_countdown--;
