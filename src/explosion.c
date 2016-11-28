@@ -27,9 +27,7 @@ void update_explosions() {
   for (i = 0; i < EXPLOSION_COUNT; i++) {
     explosion = &(explosions[i]);
 
-    if (explosion->countdown != 0) {
-      explosion->countdown--;
-    } else {
+    if (explosion->countdown != 0 && --explosion->countdown == 0) {
       tile_set_contains_explosion(world_tile(explosion->x, explosion->y),
                                   false);
     }
