@@ -49,6 +49,9 @@ void activate_explosion(uint8_t x, uint8_t y) {
     explosion = get_explosion(x, y);
   } else {
     explosion = &(explosions[next_explosion_index]);
+    if (++next_explosion_index == EXPLOSION_COUNT) {
+      next_explosion_index = 0;
+    }
   }
 
   explosion->x = x;
@@ -56,8 +59,4 @@ void activate_explosion(uint8_t x, uint8_t y) {
   explosion->countdown = EXPLOSION_DEFAULT_COUNTDOWN;
 
   tile_set_contains_explosion(world_tile(x, y), true);
-
-  if (++next_explosion_index == EXPLOSION_COUNT) {
-    next_explosion_index = 0;
-  }
 }
