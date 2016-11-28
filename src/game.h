@@ -98,19 +98,20 @@ tile_t *world_tile(uint8_t x, uint8_t y);
  * a movement speed upgrade is picked up.
  */
 
-#define PLAYER_COUNT                      2
-#define PLAYER_1_ID                       1
-#define PLAYER_2_ID                       2
+#define PLAYER_COUNT                          2
+#define PLAYER_1_ID                           1
+#define PLAYER_2_ID                           2
 
-#define PLAYER_DAMAGE_COUNTDOWN           30
-#define PLAYER_DEFAULT_MOVEMENT_COUNTDOWN 10
-#define PLAYER_DEFAULT_LIVES              3
-#define PLAYER_DEFAULT_EXPLOSION_RANGE    2
-#define PLAYER_DEFAULT_MAX_BOMB_QUANTITY  1
-#define PLAYER_1_DEFAULT_X                1
-#define PLAYER_1_DEFAULT_Y                1
-#define PLAYER_2_DEFAULT_X                30
-#define PLAYER_2_DEFAULT_Y                22
+#define PLAYER_DAMAGE_COUNTDOWN               30
+#define PLAYER_DEFAULT_MOVEMENT_COUNTDOWN     10
+#define PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN 2
+#define PLAYER_DEFAULT_LIVES                  3
+#define PLAYER_DEFAULT_EXPLOSION_RANGE        2
+#define PLAYER_DEFAULT_MAX_BOMB_QUANTITY      1
+#define PLAYER_1_DEFAULT_X                    1
+#define PLAYER_1_DEFAULT_Y                    1
+#define PLAYER_2_DEFAULT_X                    30
+#define PLAYER_2_DEFAULT_Y                    22
 
 typedef struct {
   uint8_t player_id;
