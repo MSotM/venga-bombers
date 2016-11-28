@@ -55,8 +55,11 @@ static void update_player(player_t *player) {
       player->max_bomb_quantity++;
       break;
   case TILE_UPGRADE_SPEED:
-      /* substract 1 tick */
-      player->movement_default_countdown--;
+      /* substract 1 tick if possible */
+      if (player->movement_default_countdown >
+          PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN) {
+        player->movement_default_countdown--;
+      }
       break;
   case TILE_UPGRADE_NONE:
   default:
