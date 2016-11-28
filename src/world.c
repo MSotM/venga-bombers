@@ -7,6 +7,7 @@ static world_t *world = NULL;
 
 void init_world() {
   world = calloc(sizeof(world_t), 1);
+  load_default_world();
   init_players();
 }
 

@@ -57,8 +57,8 @@ void tile_set_contains_explosion(tile_t *tile, bool contains_explosion);
  * of a set of tiles.
  */
 
-#define WORLD_WIDTH  32
-#define WORLD_HEIGHT 24
+#define WORLD_WIDTH  15
+#define WORLD_HEIGHT 15
 
 typedef struct {
   tile_t tiles[WORLD_WIDTH * WORLD_HEIGHT];
