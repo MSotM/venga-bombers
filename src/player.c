@@ -13,8 +13,6 @@ void init_players() {
   player_t *p2 = &(players[1]);
 
   p1->player_id = PLAYER_1_ID;
-  p1->x = PLAYER_1_DEFAULT_X;
-  p1->y = PLAYER_1_DEFAULT_Y;
   p1->lives = PLAYER_DEFAULT_LIVES;
   p1->damage_countdown = 0;
   p1->movement_countdown = 0;
@@ -23,8 +21,6 @@ void init_players() {
   p1->max_bomb_quantity = PLAYER_DEFAULT_MAX_BOMB_QUANTITY;
 
   p2->player_id = PLAYER_2_ID;
-  p2->x = PLAYER_2_DEFAULT_X;
-  p2->y = PLAYER_2_DEFAULT_Y;
   p2->lives = PLAYER_DEFAULT_LIVES;
   p2->damage_countdown = 0;
   p2->movement_countdown = 0;

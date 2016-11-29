@@ -108,10 +108,6 @@ tile_t *world_tile(uint8_t x, uint8_t y);
 #define PLAYER_DEFAULT_LIVES                  3
 #define PLAYER_DEFAULT_EXPLOSION_RANGE        2
 #define PLAYER_DEFAULT_MAX_BOMB_QUANTITY      1
-#define PLAYER_1_DEFAULT_X                    1
-#define PLAYER_1_DEFAULT_Y                    1
-#define PLAYER_2_DEFAULT_X                    30
-#define PLAYER_2_DEFAULT_Y                    22
 
 typedef struct {
   uint8_t player_id;
@@ -281,5 +277,13 @@ void handle_events();
 
 void init_render();
 void render();
+
+/* Levels ------------------------------------------------------------------ */
+
+/*
+ * Load a level (specified by levelNumber) into the world object. The same
+ * levelNumber will always yield the same level.
+ */
+void load_level(uint8_t levelNumber);
 
 #endif /* GAME_H */

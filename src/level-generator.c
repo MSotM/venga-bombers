@@ -1,6 +1,6 @@
 #include "game.h"
 
-void load_default_world() {
+static void load_default_world() {
   uint8_t x, y;
   player_t *p;
 
@@ -41,6 +41,15 @@ void load_default_world() {
   p->x = 1;
   p->y = 1;
   p = get_player(2);
-  p->x = 1;
-  p->y = 2;
+  p->x = WORLD_WIDTH - 2;
+  p->y = WORLD_HEIGHT - 2;
+}
+
+void load_level(uint8_t number) {
+  if(number == 0) {
+    load_default_world();
+  } else {
+    // Load a random level
+    // TODO: Implement
+  }
 }
