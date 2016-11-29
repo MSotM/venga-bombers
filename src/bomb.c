@@ -71,6 +71,8 @@ static void activate_explosion_line(uint8_t x,
     } else {
       activate_explosion(x, y);
     }
+    /* When it does not need to be rendered; you'll have to use 'continue' */
+    tile_set_render_update(tile, true);
   }
 }
 

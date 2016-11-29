@@ -62,3 +62,12 @@ void tile_set_contains_explosion(tile_t *tile, bool explosion) {
   *tile &= ~TILE_MASK_CONTAINS_EXPLOSION;
   if (explosion) *tile |= TILE_MASK_CONTAINS_EXPLOSION;
 }
+
+bool tile_needs_render_update(tile_t tile) {
+  return tile & TILE_MASK_RENDER_UPDATE;
+}
+
+void tile_set_render_update(tile_t *tile, bool update) {
+  *tile &= ~TILE_MASK_RENDER_UPDATE;
+  if (update) *tile |= TILE_MASK_RENDER_UPDATE;
+}
