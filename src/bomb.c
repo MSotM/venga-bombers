@@ -10,8 +10,18 @@ void update_bombs() {
   for (i = 0; i < BOMB_COUNT; i++) {
     bomb = &(bombs[i]);
 
-    if (bomb->player != NULL && --bomb->countdown == 0) {
-      trigger_bomb(bomb);
+    /* Only use bombs that are active */
+    if (bomb->player != NULL) {
+      /* If bomb is on explosion, trigger the bomb */
+      tile_t *tile = world_tile(bomb->x, bomb->y);
+      if (tile_contains_explosion(*tile)) {
+        trigger_bomb(bomb);
+        continue;
+      }
+      /* If countdown is 0, trigger the bomb */
+      if (--bomb->countdown == 0) {
+        trigger_bomb(bomb);
+      }
     }
   }
 }
@@ -66,8 +76,6 @@ static void activate_explosion_line(uint8_t x,
       tile_set_type(tile, TILE_TYPE_EMPTY);
       activate_explosion(x, y);
       break;
-    } else if (tile_contains_bomb(*tile)) {
-      /* TODO: Trigger bomb */
     } else {
       activate_explosion(x, y);
     }
