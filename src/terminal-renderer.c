@@ -72,7 +72,21 @@ void terminal_renderer(uint8_t x, uint8_t y) {
       } else if (tile_contains_explosion(*tile)) {
         usart_write_string("X");
       } else {
-        usart_write_string(" ");
+        tile_upgrade_t upgrade = tile_upgrade(*tile);
+        switch(upgrade) {
+        case TILE_UPGRADE_SPEED:
+          usart_write_string("&");
+          break;
+        case TILE_UPGRADE_BOMBS:
+          usart_write_string("%");
+          break;
+        case TILE_UPGRADE_RANGE:
+          usart_write_string("@");
+          break;
+        case TILE_UPGRADE_NONE: /* no options left */
+          usart_write_string(" ");
+          break;
+        }
       }
       break;
 
