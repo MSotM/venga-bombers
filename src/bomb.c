@@ -20,7 +20,11 @@ bomb_t *place_bomb(player_t *player) {
   bomb_t *bomb;
   tile_t *tile = world_tile(player->x, player->y);
 
-  if (tile_contains_bomb(*tile)) {
+  if (tile_contains_bomb(*tile) || !player->lives) {
+    return NULL;
+  }
+
+  if (player->bombs_placed >= player->max_bomb_quantity) {
     return NULL;
   }
 
@@ -32,6 +36,7 @@ bomb_t *place_bomb(player_t *player) {
   bomb->y = player->y;
   bomb->countdown = BOMB_DEFAULT_COUNTDOWN;
 
+  player->bombs_placed++;
   tile_set_contains_bomb(tile, true);
 
   if (++next_bomb_index == BOMB_COUNT) {
@@ -66,6 +71,8 @@ static void activate_explosion_line(uint8_t x,
     } else {
       activate_explosion(x, y);
     }
+    /* When it does not need to be rendered; you'll have to use 'continue' */
+    tile_set_render_update(tile, true);
   }
 }
 
@@ -73,6 +80,7 @@ void trigger_bomb(bomb_t *bomb) {
   uint8_t x = bomb->x;
   uint8_t y = bomb->y;
 
+  bomb->player->bombs_placed--;
   tile_set_contains_bomb(world_tile(bomb->x, bomb->y), false);
 
   activate_explosion(x, y);

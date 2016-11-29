@@ -24,14 +24,14 @@ static explosion_t *get_explosion(uint8_t x, uint8_t y) {
 void update_explosions() {
   int i;
   explosion_t *explosion;
+  tile_t *tile;
   for (i = 0; i < EXPLOSION_COUNT; i++) {
     explosion = &(explosions[i]);
 
-    if (explosion->countdown != 0) {
-      explosion->countdown--;
-    } else {
-      tile_set_contains_explosion(world_tile(explosion->x, explosion->y),
-                                  false);
+    if (explosion->countdown != 0 && --explosion->countdown == 0) {
+      tile = world_tile(explosion->x, explosion->y);
+      tile_set_contains_explosion(tile, false);
+      tile_set_render_update(tile, true);
     }
   }
 }
@@ -49,6 +49,9 @@ void activate_explosion(uint8_t x, uint8_t y) {
     explosion = get_explosion(x, y);
   } else {
     explosion = &(explosions[next_explosion_index]);
+    if (++next_explosion_index == EXPLOSION_COUNT) {
+      next_explosion_index = 0;
+    }
   }
 
   explosion->x = x;
@@ -56,8 +59,5 @@ void activate_explosion(uint8_t x, uint8_t y) {
   explosion->countdown = EXPLOSION_DEFAULT_COUNTDOWN;
 
   tile_set_contains_explosion(world_tile(x, y), true);
-
-  if (++next_explosion_index == EXPLOSION_COUNT) {
-    next_explosion_index = 0;
-  }
+  tile_set_render_update(tile, true);
 }

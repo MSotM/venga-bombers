@@ -17,6 +17,7 @@ typedef uint8_t tile_t;
 #define TILE_MASK_UPGRADE            0b00001100
 #define TILE_MASK_CONTAINS_BOMB      0b00010000
 #define TILE_MASK_CONTAINS_EXPLOSION 0b00100000
+#define TILE_MASK_RENDER_UPDATE      0b01000000
 
 /*
  * The type of a tile specifies what kind of place in the world it is.
@@ -51,6 +52,8 @@ bool tile_contains_bomb(tile_t tile);
 void tile_set_contains_bomb(tile_t *tile, bool contains_bomb);
 bool tile_contains_explosion(tile_t tile);
 void tile_set_contains_explosion(tile_t *tile, bool contains_explosion);
+bool tile_needs_render_update(tile_t tile);
+void tile_set_render_update(tile_t *tile, bool update);
 
 /* World ----------------------------------------------------------------------
  * The world is the environment every element of the game lives in. It consists
@@ -98,19 +101,20 @@ tile_t *world_tile(uint8_t x, uint8_t y);
  * a movement speed upgrade is picked up.
  */
 
-#define PLAYER_COUNT                      2
-#define PLAYER_1_ID                       1
-#define PLAYER_2_ID                       2
+#define PLAYER_COUNT                          2
+#define PLAYER_1_ID                           1
+#define PLAYER_2_ID                           2
 
-#define PLAYER_DAMAGE_COUNTDOWN           30
-#define PLAYER_DEFAULT_MOVEMENT_COUNTDOWN 10
-#define PLAYER_DEFAULT_LIVES              3
-#define PLAYER_DEFAULT_EXPLOSION_RANGE    2
-#define PLAYER_DEFAULT_MAX_BOMB_QUANTITY  1
-#define PLAYER_1_DEFAULT_X                1
-#define PLAYER_1_DEFAULT_Y                1
-#define PLAYER_2_DEFAULT_X                30
-#define PLAYER_2_DEFAULT_Y                22
+#define PLAYER_DAMAGE_COUNTDOWN               30
+#define PLAYER_DEFAULT_MOVEMENT_COUNTDOWN     10
+#define PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN 2
+#define PLAYER_DEFAULT_LIVES                  3
+#define PLAYER_DEFAULT_EXPLOSION_RANGE        2
+#define PLAYER_DEFAULT_MAX_BOMB_QUANTITY      1
+#define PLAYER_1_DEFAULT_X                    1
+#define PLAYER_1_DEFAULT_Y                    1
+#define PLAYER_2_DEFAULT_X                    30
+#define PLAYER_2_DEFAULT_Y                    22
 
 typedef struct {
   uint8_t player_id;
@@ -121,6 +125,7 @@ typedef struct {
   uint8_t movement_countdown;
   uint8_t movement_default_countdown;
   uint8_t explosion_range;
+  uint8_t bombs_placed;
   uint8_t max_bomb_quantity;
 } player_t;
 
@@ -167,7 +172,7 @@ bool player_move(player_t *player, int8_t dx, int8_t dy);
  */
 
 #define BOMB_COUNT 32
-#define BOMB_DEFAULT_COUNTDOWN 32
+#define BOMB_DEFAULT_COUNTDOWN 128
 
 typedef struct {
   player_t *player;
@@ -208,7 +213,7 @@ void trigger_bomb(bomb_t *bomb);
  */
 
 #define EXPLOSION_COUNT 128
-#define EXPLOSION_DEFAULT_COUNTDOWN 16
+#define EXPLOSION_DEFAULT_COUNTDOWN 32
 
 typedef struct {
   uint8_t x;
@@ -277,7 +282,33 @@ void handle_events();
 
 /* Rendering --------------------------------------------------------------- */
 
-void init_render();
-void render();
+/*
+ * Setup the renderer and print the first frame.
+ */
+typedef void (*init_display_t) ();
+extern init_display_t init_display;
+
+/*
+ * Update all flagged tiles.
+ */
+typedef void (*renderer_t) (uint8_t x, uint8_t y);
+extern renderer_t renderer;
+
+void render_cycle();
+
+/* Controls ---------------------------------------------------------------- */
+
+typedef void (*control_t) ();
+
+/*
+ * The control handler will be set by either a terminal-keyboard or nunchuck
+ * implementation.
+ */
+extern control_t control_handler;
+
+/*
+ * This will be called by the main thread. Do not use control_handler directly.
+ */
+void control_cycle();
 
 #endif /* GAME_H */

@@ -40,28 +40,30 @@ static void update_player(player_t *player) {
 
   tile_t *tile = world_tile(player->x, player->y);
 
-  if (tile_contains_explosion(*tile) && player->damage_countdown != 0) {
+  if (tile_contains_explosion(*tile) && player->damage_countdown == 0) {
     player->lives--;
+    if (!player->lives) tile_set_render_update(tile, true);
     player->damage_countdown = PLAYER_DAMAGE_COUNTDOWN;
   }
 
   switch(tile_upgrade(*tile)) {
   case TILE_UPGRADE_RANGE:
-      /* double range */
-      player->explosion_range++;
-      break;
+    player->explosion_range++;
+    break;
   case TILE_UPGRADE_BOMBS:
-      /* add one bomb quantity */
-      player->max_bomb_quantity++;
-      break;
+    player->max_bomb_quantity++;
+    break;
   case TILE_UPGRADE_SPEED:
-      /* substract 1 tick */
+    /* substract 1 tick if possible */
+    if (player->movement_default_countdown >
+        PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN) {
       player->movement_default_countdown--;
-      break;
+    }
+    break;
   case TILE_UPGRADE_NONE:
   default:
-      /* do nothing */
-      break;
+    /* do nothing */
+    break;
   }
 
   if (player->movement_countdown > 0) player->movement_countdown--;
@@ -74,12 +76,16 @@ void update_players() {
 }
 
 bool player_move(player_t *player, int8_t dx, int8_t dy) {
-  tile_t *next_tile;
+  tile_t *current_tile, *next_tile;
 
   if (player->lives == 0)              return false;
   if (player->movement_countdown != 0) return false;
 
+  current_tile = world_tile(player->x, player->y);
   next_tile = world_tile(player->x + dx, player->y + dy);
+
+  tile_set_render_update(current_tile, true);
+  tile_set_render_update(next_tile, true);
 
   if (!next_tile)                                return false;
   if (tile_contains_bomb(*next_tile))            return false;
