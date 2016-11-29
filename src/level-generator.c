@@ -36,6 +36,10 @@ static void load_default_world() {
   tile_set_type(world_tile(WORLD_WIDTH - 2, WORLD_HEIGHT - 3), TILE_TYPE_EMPTY);
   tile_set_type(world_tile(WORLD_WIDTH - 3, WORLD_HEIGHT - 2), TILE_TYPE_EMPTY);
 
+  tile_set_upgrade(world_tile(1, 3), TILE_UPGRADE_SPEED);
+  tile_set_upgrade(world_tile(3, 1), TILE_UPGRADE_BOMBS);
+  tile_set_upgrade(world_tile(3, 3), TILE_UPGRADE_RANGE);
+
   // Set player positions
   p = get_player(1);
   p->x = 1;
