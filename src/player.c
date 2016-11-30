@@ -45,9 +45,11 @@ static void update_player(player_t *player) {
   switch(tile_upgrade(*tile)) {
   case TILE_UPGRADE_RANGE:
     player->explosion_range++;
+    tile_set_upgrade(tile, TILE_UPGRADE_NONE);
     break;
   case TILE_UPGRADE_BOMBS:
     player->max_bomb_quantity++;
+    tile_set_upgrade(tile, TILE_UPGRADE_NONE);
     break;
   case TILE_UPGRADE_SPEED:
     /* substract 1 tick if possible */
@@ -55,6 +57,7 @@ static void update_player(player_t *player) {
         PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN) {
       player->movement_default_countdown--;
     }
+    tile_set_upgrade(tile, TILE_UPGRADE_NONE);
     break;
   case TILE_UPGRADE_NONE:
   default:
