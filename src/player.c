@@ -19,6 +19,8 @@ void init_players() {
   p1->movement_default_countdown = PLAYER_DEFAULT_MOVEMENT_COUNTDOWN;
   p1->explosion_range = PLAYER_DEFAULT_EXPLOSION_RANGE;
   p1->max_bomb_quantity = PLAYER_DEFAULT_MAX_BOMB_QUANTITY;
+  p1->score = 0;
+  p1->flags = 0;
 
   p2->player_id = PLAYER_2_ID;
   p2->lives = PLAYER_DEFAULT_LIVES;
@@ -27,6 +29,8 @@ void init_players() {
   p2->movement_default_countdown = PLAYER_DEFAULT_MOVEMENT_COUNTDOWN;
   p2->explosion_range = PLAYER_DEFAULT_EXPLOSION_RANGE;
   p2->max_bomb_quantity = PLAYER_DEFAULT_MAX_BOMB_QUANTITY;
+  p2->score = 0;
+  p2->flags = 0;
 }
 
 static void update_player(player_t *player) {
@@ -38,6 +42,7 @@ static void update_player(player_t *player) {
 
   if (tile_contains_explosion(*tile) && player->damage_countdown == 0) {
     player->lives--;
+    player_add_score(player, -1000);
     if (!player->lives) tile_set_render_update(tile, true);
     player->damage_countdown = PLAYER_DAMAGE_COUNTDOWN;
   }
@@ -96,4 +101,23 @@ bool player_move(player_t *player, int8_t dx, int8_t dy) {
   player->movement_countdown = player->movement_default_countdown;
 
   return true;
+}
+
+void set_player_flag(player_t *player, uint8_t flag) {
+  player->flags |= flag;
+}
+
+bool get_player_flag(player_t *player, uint8_t flag) {
+  return player->flags & flag;
+}
+
+void reset_player_flags(player_t *player) {
+  player->flags = 0;
+}
+
+void reset_all_player_flags() {
+  uint8_t player;
+  for(player = 0; player < PLAYER_COUNT; player++) {
+    reset_player_flags(get_player(player + 1));
+  }
 }

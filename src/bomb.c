@@ -95,6 +95,8 @@ void trigger_bomb(bomb_t *bomb) {
   activate_explosion_line(x, y,  1,  0, bomb->player->explosion_range);
   activate_explosion_line(x, y, -1,  0, bomb->player->explosion_range);
 
+  player_add_score(bomb->player, 100);
+
   bomb->player = NULL;
   bomb->x = 0;
   bomb->y = 0;

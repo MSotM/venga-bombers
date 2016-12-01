@@ -124,6 +124,8 @@ typedef struct {
   uint8_t explosion_range;
   uint8_t bombs_placed;
   uint8_t max_bomb_quantity;
+  uint16_t score;
+  uint8_t flags;
 } player_t;
 
 /*
@@ -320,5 +322,39 @@ void process_controls();
  * levelNumber will always yield the same level.
  */
 void load_level(uint8_t levelNumber);
+
+/* Score ------------------------------------------------------------------- */
+
+/*
+ * Add score to a given player. This can be a positive score (to increment the
+ * score of a player), or a negative score (to decrement the score of a
+ * player). The score will never go below 0.
+ */
+void player_add_score(player_t *player, int16_t scoreDiff);
+
+/* Player property flagging ------------------------------------------------ */
+
+#define PLAYER_FLAG_SCORE_UPDATED 1
+
+/*
+ * Sets a flag of a player. These are reset after every render.
+ */
+void set_player_flag(player_t *player, uint8_t flag);
+
+/*
+ * Returns a boolean indicating whether the given flag is set on the player.
+ */
+bool get_player_flag(player_t *player, uint8_t flag);
+
+/*
+ * Reset all flags of a player.
+ */
+void reset_player_flags(player_t *player);
+
+/*
+ * Resets all flags of all players. This method should be called after every
+ * render.
+ */
+void reset_all_player_flags();
 
 #endif /* GAME_H */
