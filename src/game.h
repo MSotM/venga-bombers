@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "options.h"
 
 /* Tile -----------------------------------------------------------------------
  * Tiles are stored in a single byte, for efficiency. Different bits in the
@@ -279,18 +280,26 @@ void handle_events();
 /* Rendering --------------------------------------------------------------- */
 
 /*
- * Setup the renderer and print the first frame.
+ * Initialize rendering and print the first frame.
  */
-typedef void (*init_display_t) ();
-extern init_display_t init_display;
+void init_render();
 
 /*
  * Update all flagged tiles.
  */
-typedef void (*renderer_t) (uint8_t x, uint8_t y);
-extern renderer_t renderer;
+void render();
 
-void render_cycle();
+/*
+ * LCD rendering functions used in render.c
+ */
+void init_lcd_display();
+void render_to_lcd(uint8_t x, uint8_t y);
+
+/*
+ * Terminal rendering functions used in render.c
+ */
+void init_terminal_display();
+void render_to_terminal(uint8_t x, uint8_t y);
 
 /* Controls ---------------------------------------------------------------- */
 

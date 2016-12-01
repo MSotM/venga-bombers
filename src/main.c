@@ -17,8 +17,9 @@ int main() {
               TIMER_DEFAULT_COMPARE_OUTPUT_MODE,
               TIMER_DEFAULT_COMPARE_OUTPUT_MODE);
   sei();
+
   init_world();
-  init_display();
+  init_render();
 
   while (true) {
     /* Handle input */
@@ -28,7 +29,7 @@ int main() {
       update_world();
     }
 
-    render_cycle();
+    render();
     /* Read input and act accordingly */
     control_cycle();
   }

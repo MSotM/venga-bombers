@@ -2,18 +2,15 @@
 #include <stdio.h>
 #include "game.h"
 
-
 static bool _initialized = false;
-void terminal_renderer(uint8_t x, uint8_t y);
 
-renderer_t renderer = terminal_renderer;
-
-static void init_terminal_display() {
+void init_terminal_display() {
   usart_init(115200,
              USART_DEFAULT_ASYNCHRONOUS_MODE,
              USART_DEFAULT_PARITY,
              USART_DEFAULT_STOP_BIT_COUNT,
              USART_DEFAULT_CHARACTER_SIZE);
+
   /* Reset the cursor to the top left position of the terminal */
   usart_write_string("\x1b[H");
 
@@ -29,7 +26,7 @@ static void init_terminal_display() {
   for (y = 0; y < WORLD_HEIGHT; y++) {
     usart_write_string("=");
     for (x = 0; x < WORLD_WIDTH; x++) {
-      terminal_renderer(x, y);
+      usart_write_string(" ");
     }
     usart_write_string("=\x1b[E");
   }
@@ -44,8 +41,6 @@ static void init_terminal_display() {
   _initialized = true;
 }
 
-init_display_t init_display = init_terminal_display;
-
 const size_t cusror_size = 11;
 
 static void change_cursor(uint8_t x, uint8_t y) {
@@ -54,7 +49,7 @@ static void change_cursor(uint8_t x, uint8_t y) {
   usart_write_string(tmp);
 }
 
-void terminal_renderer(uint8_t x, uint8_t y) {
+void render_to_terminal(uint8_t x, uint8_t y) {
   if (_initialized) change_cursor(x, y);
 
   if (get_player(1)->x == x && get_player(1)->y == y && get_player(1)->lives) {
