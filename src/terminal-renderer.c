@@ -17,23 +17,23 @@ void init_terminal_display() {
   uint8_t i;
   /* Print the top border */
   for (i = 0; i < WORLD_WIDTH + 2; i++) {
-    usart_write_string("=");
+    usart_write('=');
   }
   usart_write_string("\x1b[E");
 
   /* Print the playing field */
   uint8_t x, y;
   for (y = 0; y < WORLD_HEIGHT; y++) {
-    usart_write_string("=");
+    usart_write('=');
     for (x = 0; x < WORLD_WIDTH; x++) {
-      usart_write_string(" ");
+      usart_write(' ');
     }
     usart_write_string("=\x1b[E");
   }
 
   /* The bottom border */
   for (i = 0; i < WORLD_WIDTH + 2; i++) {
-    usart_write_string("=");
+    usart_write('=');
   }
   usart_write_string("\x1b[E");
 
@@ -63,38 +63,38 @@ void render_to_terminal(uint8_t x, uint8_t y) {
     switch (tile_type(*tile)) {
     case TILE_TYPE_EMPTY:
       if (tile_contains_bomb(*tile)) {
-        usart_write_string("!");
+        usart_write('!');
       } else if (tile_contains_explosion(*tile)) {
-        usart_write_string("X");
+        usart_write('X');
       } else {
         tile_upgrade_t upgrade = tile_upgrade(*tile);
         switch(upgrade) {
         case TILE_UPGRADE_SPEED:
-          usart_write_string("&");
+          usart_write('&');
           break;
         case TILE_UPGRADE_BOMBS:
-          usart_write_string("%");
+          usart_write('%');
           break;
         case TILE_UPGRADE_RANGE:
-          usart_write_string("@");
+          usart_write('@');
           break;
         case TILE_UPGRADE_NONE: /* no options left */
-          usart_write_string(" ");
+          usart_write(' ');
           break;
         }
       }
       break;
 
     case TILE_TYPE_SOLID:
-      usart_write_string("+");
+      usart_write('+');
       break;
 
     case TILE_TYPE_STATIC:
-      usart_write_string("#");
+      usart_write('#');
       break;
 
     default:
-      usart_write_string("?");
+      usart_write('?');
       break;
     }
   }
