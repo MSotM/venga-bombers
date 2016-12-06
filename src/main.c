@@ -29,7 +29,7 @@ int main() {
       update_world();
     }
 
-    render();
+    render(false);
     /* Read input and act accordingly */
     control_cycle();
   }

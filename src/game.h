@@ -287,7 +287,7 @@ void init_render();
 /*
  * Update all flagged tiles.
  */
-void render();
+void render(bool force);
 
 /*
  * LCD rendering functions used in render.c
