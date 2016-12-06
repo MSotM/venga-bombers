@@ -20,6 +20,7 @@ int main() {
 
   init_world();
   init_render();
+  init_controls();
 
   while (true) {
     /* Handle input */
@@ -30,7 +31,6 @@ int main() {
     }
 
     render(false);
-    /* Read input and act accordingly */
-    control_cycle();
+    process_controls();
   }
 }

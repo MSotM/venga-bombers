@@ -4,6 +4,6 @@
 #define RENDER_TERMINAL
 #define RENDER_LCD
 #define CONTROLS_TERMINAL
-/* #define CONTROLS_NUNCHUCK */
+#define CONTROLS_NUNCHUCK
 
 #endif /* GAME_OPTIONS_H */

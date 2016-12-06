@@ -303,18 +303,15 @@ void render_to_terminal(uint8_t x, uint8_t y);
 
 /* Controls ---------------------------------------------------------------- */
 
-typedef void (*control_t) ();
+/*
+ * Initialize any available input methods.
+ */
+void init_controls();
 
 /*
- * The control handler will be set by either a terminal-keyboard or nunchuck
- * implementation.
+ * Process input for all enabled input methods.
  */
-extern control_t control_handler;
-
-/*
- * This will be called by the main thread. Do not use control_handler directly.
- */
-void control_cycle();
+void process_controls();
 
 /* Levels ------------------------------------------------------------------ */
 
