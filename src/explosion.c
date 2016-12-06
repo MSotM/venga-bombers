@@ -10,11 +10,10 @@ static explosion_t *get_explosion(uint8_t x, uint8_t y) {
   for (i = 0; i < EXPLOSION_COUNT; i++) {
     explosion = &(explosions[i]);
 
-    if (explosion->x == x && explosion->y == y) {
-      if (explosion->countdown) {
-        return explosion;
-      }
-      return NULL;
+    if (explosion->x == x
+        && explosion->y == y
+        && explosion->countdown) {
+      return explosion;
     }
   }
 
