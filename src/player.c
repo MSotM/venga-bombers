@@ -83,13 +83,13 @@ bool player_move(player_t *player, int8_t dx, int8_t dy) {
   current_tile = world_tile(player->x, player->y);
   next_tile = world_tile(player->x + dx, player->y + dy);
 
-  tile_set_render_update(current_tile, true);
-  tile_set_render_update(next_tile, true);
-
   if (!next_tile)                                return false;
   if (tile_contains_bomb(*next_tile))            return false;
   if (tile_type(*next_tile) == TILE_TYPE_STATIC) return false;
   if (tile_type(*next_tile) == TILE_TYPE_SOLID)  return false;
+
+  tile_set_render_update(current_tile, true);
+  tile_set_render_update(next_tile, true);
 
   player->x = player->x + dx;
   player->y = player->y + dy;
