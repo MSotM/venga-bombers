@@ -9,15 +9,7 @@ void init_render() {
   init_lcd_display();
 #endif
 
-  /* Print the playing field */
-  uint8_t x, y;
-  for (y = 0; y < WORLD_HEIGHT; y++) {
-    for (x = 0; x < WORLD_WIDTH; x++) {
-      tile_set_render_update(world_tile(x, y), true);
-    }
-  }
-
-  render();
+  render(true);
 }
 
 static void render_to_displays(uint8_t x, uint8_t y) {
@@ -30,13 +22,13 @@ static void render_to_displays(uint8_t x, uint8_t y) {
 #endif
 }
 
-void render() {
+void render(bool force) {
   tile_t *tile;
   uint8_t x, y;
   for (y = 0; y < WORLD_HEIGHT; y++) {
     for (x = 0; x < WORLD_WIDTH; x++) {
       tile = world_tile(x, y);
-      if (tile_needs_render_update(*tile)) {
+      if (force || tile_needs_render_update(*tile)) {
         render_to_displays(x, y);
         tile_set_render_update(tile, false);
       }
