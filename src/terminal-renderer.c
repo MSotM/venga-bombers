@@ -2,49 +2,44 @@
 #include <stdio.h>
 #include "game.h"
 
-
 static bool _initialized = false;
-void terminal_renderer(uint8_t x, uint8_t y);
 
-renderer_t renderer = terminal_renderer;
-
-static void init_terminal_display() {
+void init_terminal_display() {
   usart_init(115200,
              USART_DEFAULT_ASYNCHRONOUS_MODE,
              USART_DEFAULT_PARITY,
              USART_DEFAULT_STOP_BIT_COUNT,
              USART_DEFAULT_CHARACTER_SIZE);
+
   /* Reset the cursor to the top left position of the terminal */
   usart_write_string("\x1b[H");
 
   uint8_t i;
   /* Print the top border */
   for (i = 0; i < WORLD_WIDTH + 2; i++) {
-    usart_write_string("=");
+    usart_write('=');
   }
   usart_write_string("\x1b[E");
 
   /* Print the playing field */
   uint8_t x, y;
   for (y = 0; y < WORLD_HEIGHT; y++) {
-    usart_write_string("=");
+    usart_write('=');
     for (x = 0; x < WORLD_WIDTH; x++) {
-      terminal_renderer(x, y);
+      usart_write(' ');
     }
     usart_write_string("=\x1b[E");
   }
 
   /* The bottom border */
   for (i = 0; i < WORLD_WIDTH + 2; i++) {
-    usart_write_string("=");
+    usart_write('=');
   }
   usart_write_string("\x1b[E");
 
   /* Render incremental after initialization */
   _initialized = true;
 }
-
-init_display_t init_display = init_terminal_display;
 
 const size_t cusror_size = 11;
 
@@ -54,7 +49,7 @@ static void change_cursor(uint8_t x, uint8_t y) {
   usart_write_string(tmp);
 }
 
-void terminal_renderer(uint8_t x, uint8_t y) {
+void render_to_terminal(uint8_t x, uint8_t y) {
   if (_initialized) change_cursor(x, y);
 
   if (get_player(1)->x == x && get_player(1)->y == y && get_player(1)->lives) {
@@ -68,38 +63,38 @@ void terminal_renderer(uint8_t x, uint8_t y) {
     switch (tile_type(*tile)) {
     case TILE_TYPE_EMPTY:
       if (tile_contains_bomb(*tile)) {
-        usart_write_string("!");
+        usart_write('!');
       } else if (tile_contains_explosion(*tile)) {
-        usart_write_string("X");
+        usart_write('X');
       } else {
         tile_upgrade_t upgrade = tile_upgrade(*tile);
         switch(upgrade) {
         case TILE_UPGRADE_SPEED:
-          usart_write_string("&");
+          usart_write('&');
           break;
         case TILE_UPGRADE_BOMBS:
-          usart_write_string("%");
+          usart_write('%');
           break;
         case TILE_UPGRADE_RANGE:
-          usart_write_string("@");
+          usart_write('@');
           break;
         case TILE_UPGRADE_NONE: /* no options left */
-          usart_write_string(" ");
+          usart_write(' ');
           break;
         }
       }
       break;
 
     case TILE_TYPE_SOLID:
-      usart_write_string("+");
+      usart_write('+');
       break;
 
     case TILE_TYPE_STATIC:
-      usart_write_string("#");
+      usart_write('#');
       break;
 
     default:
-      usart_write_string("?");
+      usart_write('?');
       break;
     }
   }
