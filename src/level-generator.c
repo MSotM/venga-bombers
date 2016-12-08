@@ -1,5 +1,31 @@
 #include "game.h"
 
+static uint64_t random_seed = 4; /* Chosen by fair dice roll.
+                                    Guaranteed to be random. */
+static uint32_t random_number() {
+  random_seed = 6364136223846793005ULL * random_seed + 1;
+  return random_seed >> 33;
+}
+
+static void place_upgrades() {
+  uint8_t x, y;
+  tile_t *tile;
+  uint8_t random;
+
+  for (x = 0; x < WORLD_WIDTH; x++) {
+    for (y = 0; y < WORLD_HEIGHT; y++) {
+      tile = world_tile(x, y);
+
+      if (tile_type(*tile) != TILE_TYPE_SOLID) continue;
+
+      random = random_number() % 255;
+      if (random < 15)      tile_set_upgrade(tile, TILE_UPGRADE_BOMBS);
+      else if (random < 30) tile_set_upgrade(tile, TILE_UPGRADE_SPEED);
+      else if (random < 45) tile_set_upgrade(tile, TILE_UPGRADE_RANGE);
+    }
+  }
+}
+
 static void load_default_world() {
   uint8_t x, y;
   player_t *p;
@@ -36,9 +62,7 @@ static void load_default_world() {
   tile_set_type(world_tile(WORLD_WIDTH - 2, WORLD_HEIGHT - 3), TILE_TYPE_EMPTY);
   tile_set_type(world_tile(WORLD_WIDTH - 3, WORLD_HEIGHT - 2), TILE_TYPE_EMPTY);
 
-  tile_set_upgrade(world_tile(1, 3), TILE_UPGRADE_SPEED);
-  tile_set_upgrade(world_tile(3, 1), TILE_UPGRADE_BOMBS);
-  tile_set_upgrade(world_tile(3, 3), TILE_UPGRADE_RANGE);
+  place_upgrades();
 
   // Set player positions
   p = get_player(1);
