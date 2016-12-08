@@ -296,6 +296,7 @@ void render(bool force);
  */
 void init_lcd_display();
 void render_to_lcd(uint8_t x, uint8_t y);
+void render_player_to_lcd(player_t *player);
 
 /*
  * Terminal rendering functions used in render.c
@@ -335,6 +336,7 @@ void player_add_score(player_t *player, int16_t scoreDiff);
 /* Player property flagging ------------------------------------------------ */
 
 #define PLAYER_FLAG_SCORE_UPDATED 1
+#define PLAYER_FLAG_HEALTH_UPDATED 2
 
 /*
  * Sets a flag of a player. These are reset after every render.
