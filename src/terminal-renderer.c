@@ -73,8 +73,6 @@ void init_terminal_display() {
   _initialized = true;
 }
 
-init_display_t init_display = init_terminal_display;
-
 static void change_cursor(uint8_t x, uint8_t y) {
   usart_write_string("\x1b[");
   usart_write_integer(y + 2);
