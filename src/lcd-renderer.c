@@ -1,6 +1,7 @@
 #include <pleasant-lcd.h>
 #include <stdio.h>
 #include "game.h"
+#include "font.h"
 
 #define LCD_SQUARE_SIZE                16
 

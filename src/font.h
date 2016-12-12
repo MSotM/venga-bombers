@@ -1,5 +1,11 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef FONT_H
+#define FONT_H
+
+#include <stdint.h>
+#include <pleasant-lcd.h>
+
+#define FONT_INCLUDES_DIGITS
+/* #define FONT_INCLUDES_LETTERS */
 
 #define FONT_CHAR_c 30
 #define FONT_CHAR_e 32
@@ -11,11 +17,12 @@
 #define FONT_CHAR_r 44
 #define FONT_CHAR_s 46
 
-void lcd_render_integer(uint16_t offsetX, uint16_t offsetY, int number,
-                        lcd_color textColor, lcd_color bgColor, uint8_t scale,
-                        uint16_t minWidth);
+void lcd_render_integer(uint16_t offset_x,
+                        uint16_t offset_y,
+                        int number,
+                        lcd_color text_color,
+                        lcd_color bg_color,
+                        uint8_t scale,
+                        uint16_t min_width);
 
-uint8_t render_data(int offsetX, int offsetY, int location, lcd_color textColor,
-                    lcd_color bgColor, uint8_t scale);
-
-#endif
+#endif /* FONT_H */

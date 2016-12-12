@@ -1,6 +1,4 @@
-#include <stdint.h>
 #include <avr/pgmspace.h>
-#include <pleasant-lcd.h>
 #include "font.h"
 
 /*
@@ -17,18 +15,19 @@
  */
 
 const PROGMEM uint16_t font_PGM[] = {
+#ifdef FONT_INCLUDES_DIGITS
   /* The number 0 (0x30) encoded as follows:
    * .111.
    * 1...1
    * 1..11
    * 1.1.1
    * 11..1
-   * 1...1  
+   * 1...1
    * .111.
   R 22221111  header    5555544444333332          7777766666
   C 43215432  header    5432154321543215          5432154321 */
   0b0001011100010010, 0b1001110101110011, 0b0000000111010001,
-  
+
   /* The number 1 (0x31) encoded as follows:
    * 11
    * .1
@@ -36,7 +35,7 @@ const PROGMEM uint16_t font_PGM[] = {
    * .1
    * .1
    * .1
-   * .1   
+   * .1
   R 54433221 header                77665
   C 12121212 header                21212 */
   0b0101010110000110, 0b0000000000010101, 0x00,
@@ -136,8 +135,8 @@ const PROGMEM uint16_t font_PGM[] = {
   R 22221111  header    5555544444333332          7777766666
   C 43215432  header    5432154321543215          5432154321 */
   0b0001011100010010, 0b1000011110100011, 0b0000000111010000,
-
-#ifdef INCLUDE_CHARACTERS
+#endif
+#ifdef FONT_INCLUDES_LETTERS
   /* The character c encoded as follows:
    * .111.
    * 1...1
@@ -188,8 +187,8 @@ const PROGMEM uint16_t font_PGM[] = {
    * 1
    * 1
    * 1
-  R   111111 header     
-  C   765432 header 
+  R   111111 header
+  C   765432 header */
   0b0011111010000010, 0b0000000000000000,
 
   /* The character o encoded as follows:
@@ -234,131 +233,173 @@ const PROGMEM uint16_t font_PGM[] = {
 #endif
 };
 
-uint8_t render_data(int offsetX,
-                    int offsetY,
-                    int location,
-                    lcd_color textColor,
-                    lcd_color bgColor,
-                    uint8_t scale) {
-  /* Get start of character */
-  const PROGMEM uint8_t *ptr;
-  ptr = (uint8_t *)&font_PGM[location];
+typedef struct {
+  uint8_t *byte_pointer;
+  uint8_t byte;
+  uint8_t bit_position;
+  uint8_t width, height;
+  uint8_t vertical_offset;
+} character_render_state_t;
 
-  /* Allocate variables */
-  uint8_t byte, j, w, h, width, verticalCharacterOffset, bit, bitPosition,
-      height, header;
+static void parse_character_header(character_render_state_t *state) {
+  uint8_t byte = state->byte;
+
+  state->width = ((byte >> 2) & 0x07) + 1;
+  state->height = (byte & 0x03) + 5;
+  state->vertical_offset = (byte >> 5) & 0x03;
+  state->bit_position = 7;
+}
+
+static void render_row(character_render_state_t *state,
+                       uint8_t scale,
+                       lcd_color text_color,
+                       lcd_color bg_color) {
+  uint8_t i, w, j;
+
+  /* Each row of the character needs to be rendered multiple times, to account
+     for the scale. Each iteration should render the exact same thing, so we
+     need to copy the appropriate state and only update it after all iterations
+     are done. */
+  uint8_t *byte_pointer, byte, bit_position, bit;
+
+  if (scale < 1) return;
+
+  for (i = 0; i < scale; i++) {
+    byte_pointer = state->byte_pointer;
+    byte = state->byte;
+    bit_position = state->bit_position;
+    bit = (byte >> bit_position) & 1;
+
+    for (w = 0; w < state->width; w++) {
+      /* Width of each pixel also needs to be scaled */
+      for (j = 0; j < scale; j++) {
+        lcd_batch_draw(bit ? text_color : bg_color);
+      }
+
+      bit_position++;
+      if (bit_position > 7) {
+        bit_position = 0;
+        byte = pgm_read_byte(++byte_pointer);
+      }
+      bit = (byte >> bit_position) & 1;
+    }
+  }
+
+  state->byte_pointer = byte_pointer;
+  state->byte = byte;
+  state->bit_position = bit_position;
+}
+
+static uint8_t render_character(int offset_x,
+                                int offset_y,
+                                int location,
+                                lcd_color text_color,
+                                lcd_color bg_color,
+                                uint8_t scale) {
+  character_render_state_t state;
   uint16_t i;
 
-  /* Read header */
-  header = pgm_read_byte(ptr);
-  height = (header & 0x03) + 5;
-  width = ((header >> 2) & 0x07) + 1;
-  verticalCharacterOffset = (header >> 5) & 0x03;
-  bit = (header >> 7) & 1;
-  bitPosition = 7;
+  state.byte_pointer = (uint8_t *)&font_PGM[location];
+  state.byte = pgm_read_byte(state.byte_pointer);
+  parse_character_header(&state);
 
-  /* Set area for lcd */
-  lcd_batch_start(offsetX, offsetY, width * scale,
-                  (height + verticalCharacterOffset) * scale);
+  lcd_batch_start(offset_x,
+                  offset_y,
+                  state.width * scale,
+                  (state.height + state.vertical_offset) * scale);
 
-  /* Print vertical offset empty area */
-  i = 0;
-  while (i++ < width * verticalCharacterOffset * scale * scale) {
-    lcd_batch_draw(bgColor);
+  /* We need to fill the area taken up by the vertical offset with the
+     background color, to make sure it's clear. */
+  for (i = 0;
+       i < ((state.width * scale) * (state.vertical_offset * scale));
+       i++) {
+    lcd_batch_draw(bg_color);
   }
 
-  for (h = 0; h < height; h++) {
-    uint8_t _bit, _bitPosition, _byte;
-    const PROGMEM uint8_t *_ptr;
-
-    /* Print row 'scale' times */
-    for (j = 0; j < scale; j++) {
-      /* Set all needed vars to temps */
-      _bit = bit;
-      _bitPosition = bitPosition;
-      _byte = byte;
-      _ptr = ptr;
-
-      /* Print row using the temp vars */
-      for (w = 0; w < width; w++) {
-        /* Draw bit */
-        for (i = 0; i < scale; i++) {
-          lcd_batch_draw(_bit ? textColor : bgColor);
-        }
-
-        /* Goto next bit */
-        _bitPosition++;
-        if (_bitPosition == 8) {
-          _bitPosition = 0;
-          _byte = pgm_read_byte(++_ptr);
-        }
-        _bit = (_byte >> _bitPosition) & 1;
-      }
-    }
-
-    /* Row is printed 'scale' times, so save temp vars */
-    bit = _bit;
-    bitPosition = _bitPosition;
-    byte = _byte;
-    ptr = _ptr;
+  for (i = 0; i < state.height; i++) {
+    render_row(&state, scale, text_color, bg_color);
   }
 
-  /* Stop drawing */
   lcd_batch_stop();
-
-  /* Return the printed width */
-  return width * scale;
+  return state.width * scale;
 }
 
-static uint8_t render_digit(int offsetX,
-                            int offsetY,
+static uint8_t render_digit(int offset_x,
+                            int offset_y,
                             uint8_t c,
-                            lcd_color textColor,
-                            lcd_color bgColor,
+                            lcd_color text_color,
+                            lcd_color bg_color,
                             uint8_t scale) {
-  return render_data(offsetX, offsetY, c * 3, textColor, bgColor, scale);
+#ifndef FONT_INCLUDES_DIGITS
+  return 0;
+#endif
+  return render_character(offset_x,
+                          offset_y,
+                          c * 3,
+                          text_color,
+                          bg_color,
+                          scale);
 }
 
-void lcd_render_integer(uint16_t offsetX,
-                        uint16_t offsetY,
+void lcd_render_integer(uint16_t offset_x,
+                        uint16_t offset_y,
                         int number,
-                        lcd_color textColor,
-                        lcd_color bgColor,
+                        lcd_color text_color,
+                        lcd_color bg_color,
                         uint8_t scale,
-                        uint16_t minWidth) {
-  uint16_t lastExponent, d, e, renderedWidth;
-  renderedWidth = 0;
-  lastExponent = 0;
+                        uint16_t min_width) {
+  uint16_t last_exponent, d, e, rendered_width;
+  rendered_width = 0;
+  last_exponent = 0;
 
   /* Print significant digits */
   do {
     d = number;
     e = 1;
-    lastExponent = 0;
+    last_exponent = 0;
     while (d > 9) {
       d /= 10;
       e *= 10;
-      lastExponent++;
+      last_exponent++;
     }
-    renderedWidth += render_digit(offsetX + renderedWidth, offsetY, d,
-                                  textColor, bgColor, scale);
+    rendered_width += render_digit(offset_x + rendered_width,
+                                   offset_y,
+                                   d,
+                                   text_color,
+                                   bg_color,
+                                   scale);
 
-    lcd_fill_rect(offsetX + renderedWidth, offsetY, scale, scale * 7, bgColor);
-    renderedWidth += scale;
+    lcd_fill_rect(offset_x + rendered_width,
+                  offset_y,
+                  scale,
+                  scale * 7,
+                  bg_color);
+    rendered_width += scale;
     number -= e * d;
   } while (number);
 
   /* Print trailing 0's */
-  for (d = 0; d < lastExponent; d++) {
-    renderedWidth += render_digit(offsetX + renderedWidth, offsetY, 0,
-                                  textColor, bgColor, scale);
-    lcd_fill_rect(offsetX + renderedWidth, offsetY, scale, scale * 7, bgColor);
-    renderedWidth += scale;
+  for (d = 0; d < last_exponent; d++) {
+    rendered_width += render_digit(offset_x + rendered_width,
+                                  offset_y,
+                                  0,
+                                  text_color,
+                                  bg_color,
+                                  scale);
+    lcd_fill_rect(offset_x + rendered_width,
+                  offset_y,
+                  scale,
+                  scale * 7,
+                  bg_color);
+    rendered_width += scale;
   }
 
   /* Print empty space on the end */
-  if (renderedWidth < minWidth) {
-    lcd_fill_rect(offsetX + renderedWidth, offsetY, minWidth - renderedWidth,
-                  scale * 7, bgColor);
+  if (rendered_width < min_width) {
+    lcd_fill_rect(offset_x + rendered_width,
+                  offset_y,
+                  min_width - rendered_width,
+                  scale * 7,
+                  bg_color);
   }
 }
