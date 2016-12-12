@@ -299,6 +299,12 @@ void render_to_lcd(uint8_t x, uint8_t y);
 void render_player_to_lcd(player_t *player);
 
 /*
+ * 7 segment rendering functions used in render.c
+ */
+void init_seven_segment();
+void render_player_to_seven_segment(player_t *player);
+
+/*
  * Terminal rendering functions used in render.c
  */
 void init_terminal_display();

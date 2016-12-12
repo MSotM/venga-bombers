@@ -9,6 +9,10 @@ void init_render() {
   init_lcd_display();
 #endif
 
+#ifdef RENDER_SEVEN_SEGMENT
+  init_seven_segment();
+#endif
+
   render(true);
 }
 
@@ -25,6 +29,10 @@ static void render_to_displays(uint8_t x, uint8_t y) {
 static void render_player_to_displays(player_t *player) {
   #ifdef RENDER_LCD
     render_player_to_lcd(player);
+  #endif
+
+  #ifdef RENDER_SEVEN_SEGMENT
+    render_player_to_seven_segment(player);
   #endif
 }
 
