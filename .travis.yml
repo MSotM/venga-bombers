@@ -1,0 +1,12 @@
+language: c
+
+sudo: required
+
+compiler:
+    - gcc
+
+install:
+    - sudo pip install platformio
+
+script:
+    - pio run
