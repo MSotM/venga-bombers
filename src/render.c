@@ -22,7 +22,14 @@ static void render_to_displays(uint8_t x, uint8_t y) {
 #endif
 }
 
+static void render_player_to_displays(player_t *player) {
+  #ifdef RENDER_LCD
+    render_player_to_lcd(player);
+  #endif
+}
+
 void render(bool force) {
+  /* Render all tile updates */
   tile_t *tile;
   uint8_t x, y;
   for (y = 0; y < WORLD_HEIGHT; y++) {
@@ -32,6 +39,22 @@ void render(bool force) {
         render_to_displays(x, y);
         tile_set_render_update(tile, false);
       }
+    }
+  }
+
+  /* Render player updates */
+  uint8_t i;
+  player_t *player;
+  for(i = 0; i < PLAYER_COUNT; i++) {
+    player = get_player(i + 1);
+
+    /* If player is updated or an update is forced, render the player */
+    if(force) {
+      player->flags = PLAYER_FLAG_SCORE_UPDATED | PLAYER_FLAG_HEALTH_UPDATED;
+    }
+    if(player->flags) {
+      render_player_to_displays(player);
+      reset_player_flags(player);
     }
   }
 }

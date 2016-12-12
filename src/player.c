@@ -42,6 +42,7 @@ static void update_player(player_t *player) {
 
   if (tile_contains_explosion(*tile) && player->damage_countdown == 0) {
     player->lives--;
+    set_player_flag(player, PLAYER_FLAG_HEALTH_UPDATED);
     player_add_score(player, -1000);
     if (!player->lives) tile_set_render_update(tile, true);
     player->damage_countdown = PLAYER_DAMAGE_COUNTDOWN;
