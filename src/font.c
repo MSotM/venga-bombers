@@ -301,12 +301,12 @@ static void render_row(character_render_state_t *state,
   state->bit_position = bit_position;
 }
 
-static uint8_t render_character(int offset_x,
-                                int offset_y,
-                                int location,
-                                lcd_color text_color,
-                                lcd_color bg_color,
-                                uint8_t scale) {
+uint8_t lcd_render_character(int offset_x,
+                             int offset_y,
+                             int location,
+                             lcd_color text_color,
+                             lcd_color bg_color,
+                             uint8_t scale) {
   character_render_state_t state;
   uint16_t i;
 
@@ -344,12 +344,12 @@ static uint8_t render_digit(int offset_x,
 #ifndef FONT_INCLUDES_DIGITS
   return 0;
 #endif
-  return render_character(offset_x,
-                          offset_y,
-                          c * 3,
-                          text_color,
-                          bg_color,
-                          scale);
+  return lcd_render_character(offset_x,
+                              offset_y,
+                              c * 3,
+                              text_color,
+                              bg_color,
+                              scale);
 }
 
 void lcd_render_integer(uint16_t offset_x,

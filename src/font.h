@@ -26,4 +26,11 @@ void lcd_render_integer(uint16_t offset_x,
                         uint8_t scale,
                         uint16_t min_width);
 
+uint8_t lcd_render_character(int offset_x,
+                             int offset_y,
+                             int location,
+                             lcd_color text_color,
+                             lcd_color bg_color,
+                             uint8_t scale);
+
 #endif /* FONT_H */
