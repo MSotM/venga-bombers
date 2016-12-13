@@ -168,12 +168,31 @@ void render_to_lcd(uint8_t x, uint8_t y) {
       switch (upgrade) {
       case TILE_UPGRADE_SPEED:
         render_lcd_square(x, y, LCD_COLOR_UPGRADE_SPEED);
+        lcd_render_character(x * LCD_SQUARE_SIZE + 4,
+                             y * LCD_SQUARE_SIZE,
+                             FONT_CHAR_s,
+                             RGB(0, 0, 0),
+                             LCD_COLOR_UPGRADE_SPEED,
+                             2);
         break;
       case TILE_UPGRADE_BOMBS:
         render_lcd_square(x, y, LCD_COLOR_UPGRADE_BOMBS);
+        lcd_render_character(x * LCD_SQUARE_SIZE + 4,
+                             y * LCD_SQUARE_SIZE,
+                             FONT_CHAR_b,
+                             RGB(0, 0, 0),
+                             LCD_COLOR_UPGRADE_BOMBS,
+                             2);
+
         break;
       case TILE_UPGRADE_RANGE:
         render_lcd_square(x, y, LCD_COLOR_UPGRADE_RANGE);
+        lcd_render_character(x * LCD_SQUARE_SIZE + 4,
+                             y * LCD_SQUARE_SIZE,
+                             FONT_CHAR_r,
+                             RGB(0, 0, 0),
+                             LCD_COLOR_UPGRADE_RANGE,
+                             2);
         break;
       case TILE_UPGRADE_NONE: /* no options left */
         render_lcd_square(x, y, LCD_COLOR_UPGRADE_NONE);

@@ -5,7 +5,7 @@
 #include <pleasant-lcd.h>
 
 #define FONT_INCLUDES_DIGITS
-/* #define FONT_INCLUDES_LETTERS */
+#define FONT_INCLUDES_LETTERS
 
 #define FONT_CHAR_b 30
 #define FONT_CHAR_c 32
