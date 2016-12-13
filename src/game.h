@@ -295,6 +295,7 @@ void render(bool force);
  * LCD rendering functions used in render.c
  */
 void init_lcd_display();
+void update_lcd_brightness();
 void render_to_lcd(uint8_t x, uint8_t y);
 void render_player_to_lcd(player_t *player);
 
@@ -364,5 +365,10 @@ void reset_player_flags(player_t *player);
  * render.
  */
 void reset_all_player_flags();
+
+/* Brightness control ------------------------------------------------------ */
+
+void init_brightness_control();
+uint8_t brightness_control_brightness();
 
 #endif /* GAME_H */

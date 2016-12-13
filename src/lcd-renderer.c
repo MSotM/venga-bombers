@@ -50,7 +50,7 @@ static lcd_color get_player_avatar(player_t *player) {
 
 void init_lcd_display() {
   lcd_init(LCD_DEFAULT_SPI_CLOCK_SPEED);
-  lcd_set_brightness(100);
+  init_brightness_control();
 
   /* Print UI background */
   lcd_fill_rect(240 + LCD_UI_BORDER_WIDTH, LCD_UI_BORDER_WIDTH,
@@ -213,4 +213,8 @@ void render_to_lcd(uint8_t x, uint8_t y) {
     render_lcd_square(x, y, LCD_COLOR_UNKNOWN);
     break;
   }
+}
+
+void update_lcd_brightness() {
+  lcd_set_brightness(brightness_control_brightness());
 }
