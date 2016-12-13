@@ -106,7 +106,7 @@ tile_t *world_tile(uint8_t x, uint8_t y);
 #define PLAYER_1_ID                           1
 #define PLAYER_2_ID                           2
 
-#define PLAYER_DAMAGE_COUNTDOWN               30
+#define PLAYER_DAMAGE_COUNTDOWN               32
 #define PLAYER_DEFAULT_MOVEMENT_COUNTDOWN     10
 #define PLAYER_MIN_DEFAULT_MOVEMENT_COUNTDOWN 2
 #define PLAYER_DEFAULT_LIVES                  3
