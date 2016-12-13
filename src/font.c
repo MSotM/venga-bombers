@@ -137,6 +137,17 @@ const PROGMEM uint16_t font_PGM[] = {
   0b0001011100010010, 0b1000011110100011, 0b0000000111010000,
 #endif
 #ifdef FONT_INCLUDES_LETTERS
+  /* The character b encoded as follows:
+   * 1...
+   * 1...
+   * 111.
+   * 1..1
+   * 1..1
+   * 111.
+  R 22221111 header     5555544444333332
+  C 43215432 header     5432154321543215 */
+  0b1000100010101101, 0b0011110011001011,
+
   /* The character c encoded as follows:
    * .111.
    * 1...1
