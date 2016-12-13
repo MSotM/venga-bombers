@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include <pleasant-lcd.h>
 #include "game.h"
 
 #define PIN1_DDR DDRC
