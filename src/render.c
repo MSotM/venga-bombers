@@ -37,6 +37,10 @@ static void render_player_to_displays(player_t *player) {
 }
 
 void render(bool force) {
+#ifdef RENDER_LCD
+  update_lcd_brightness();
+#endif
+
   /* Render all tile updates */
   tile_t *tile;
   uint8_t x, y;
