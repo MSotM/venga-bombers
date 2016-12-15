@@ -32,9 +32,6 @@
 void init_lcd_display() {
   lcd_init(LCD_DEFAULT_SPI_CLOCK_SPEED);
   init_brightness_control();
-
-  render_player_to_lcd(get_player(1), true);
-  render_player_to_lcd(get_player(2), true);
 }
 
 static void lcd_render_integer(int number,
@@ -211,6 +208,30 @@ void render_to_lcd(uint8_t x, uint8_t y) {
                    1);
     break;
   }
+}
+
+void render_menu_to_lcd() {
+  lcd_fill_screen(RGB(255, 255, 255));
+
+  /* TITLE SPACE */
+  uint16_t title_width = 240, title_height = 40;
+  uint16_t title_pos_x = (LCD_WIDTH / 2) - (title_width / 2);
+  uint16_t title_pos_y = 5;
+  lcd_fill_rect(title_pos_x,
+                title_pos_y,
+                title_width,
+                title_height,
+                RGB(0, 0, 0));
+
+  /* PLAY BUTTON SPACE */
+  uint16_t play_button_width = 80, play_button_height = 30;
+  uint16_t play_button_pos_x = (LCD_WIDTH / 2) - (play_button_width / 2);
+  uint16_t play_button_pos_y = (LCD_HEIGHT / 2) - (play_button_height / 2);
+  lcd_fill_rect(play_button_pos_x,
+                play_button_pos_y,
+                play_button_width,
+                play_button_height,
+                RGB(0, 0, 0));
 }
 
 void update_lcd_brightness() {
