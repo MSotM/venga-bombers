@@ -306,7 +306,7 @@ void render(bool force);
 void init_lcd_display();
 void update_lcd_brightness();
 void render_to_lcd(uint8_t x, uint8_t y);
-void render_player_to_lcd(player_t *player);
+void render_player_to_lcd(player_t *player, bool force);
 
 /*
  * 7 segment rendering functions used in render.c

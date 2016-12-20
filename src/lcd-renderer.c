@@ -2,146 +2,102 @@
 #include <stdio.h>
 #include "game.h"
 #include "font.h"
+#include "texture.h"
 
 #define LCD_SQUARE_SIZE                16
 
-#define LCD_COLOR_PLAYER1              RGB(0,   255, 0  )
-#define LCD_COLOR_PLAYER2              RGB(0,   0,   255)
-#define LCD_COLOR_BOMB                 RGB(255, 0,   0  )
-#define LCD_COLOR_EXPLOSION            RGB(255, 128, 0  )
-#define LCD_COLOR_SOLID                RGB(128, 128, 128)
-#define LCD_COLOR_STATIC               RGB(0,   0,   0  )
-#define LCD_COLOR_UPGRADE_SPEED        RGB(0,   255, 255)
-#define LCD_COLOR_UPGRADE_BOMBS        RGB(0,   255, 255)
-#define LCD_COLOR_UPGRADE_RANGE        RGB(0,   255, 255)
-#define LCD_COLOR_UPGRADE_NONE         RGB(255, 255, 255)
-#define LCD_COLOR_UNKNOWN              RGB(255, 0,   255)
+#define LCD_UI_X                       240
+#define LCD_UI_Y                       0
+#define LCD_UI_PLAYER_1_OFFSET_X       0
+#define LCD_UI_PLAYER_1_OFFSET_Y       0
+#define LCD_UI_PLAYER_2_OFFSET_X       0
+#define LCD_UI_PLAYER_2_OFFSET_Y       120
 
-#define LCD_UI_COLOR_BORDER            RGB(0,   0,   0)
-#define LCD_UI_COLOR_BACKGROUND        RGB(200, 200, 200)
-#define LCD_UI_BORDER_WIDTH            8
+#define LCD_UI_AVATAR_OFFSET_X         16
+#define LCD_UI_AVATAR_OFFSET_Y         16
 
-#define LCD_UI_HEALTH_BAR_OFFSET_Y     70
-#define LCD_UI_HEALTH_BAR_HEIGHT       12
-#define LCD_UI_HEALTH_BAR_COLOR_1      RGB(0,   255, 0)
-#define LCD_UI_HEALTH_BAR_COLOR_2      RGB(255, 0,   0)
-#define LCD_UI_HEALTH_BAR_BORDER_COLOR RGB(0,   0,   0)
-#define LCD_UI_HEALTH_BAR_BORDER_WIDTH 3
+#define LCD_UI_HEALTH_BAR_OFFSET_X     16
+#define LCD_UI_HEALTH_BAR_OFFSET_Y     69
+#define LCD_UI_HEALTH_BAR_WIDTH        48
+#define LCD_UI_HEALTH_BAR_HEIGHT       10
+#define LCD_UI_HEALTH_BAR_COLOR_1      RGB(56,  148, 56)
+#define LCD_UI_HEALTH_BAR_COLOR_2      RGB(148, 56,  56)
 
+#define LCD_UI_SCORE_OFFSET_X          8
+#define LCD_UI_SCORE_OFFSET_Y          85
+#define LCD_UI_SCORE_WIDTH             66
+#define LCD_UI_SCORE_HEIGHT            16
 #define LCD_UI_COLOR_SCORE             RGB(0,   0,   0)
-#define LCD_UI_SCORE_OFFSET_X          5
-#define LCD_UI_SCORE_OFFSET_Y          90
-
-#define LCD_UI_AVATAR_BORDER_WIDTH     3
-#define LCD_UI_AVATAR_WIDTH            40
-#define LCD_UI_AVATAR_HEIGHT           40
-#define LCD_UI_AVATAR_OFFSET_Y         10
-
-static lcd_color get_player_avatar(player_t *player) {
-  switch (player->player_id) {
-  case PLAYER_1_ID:
-    return LCD_COLOR_PLAYER1;
-  case PLAYER_2_ID:
-    return LCD_COLOR_PLAYER2;
-  default:
-    return RGB(255, 255, 0);
-  }
-}
+#define LCD_UI_COLOR_SCORE_BACKGROUND  RGB(162, 152, 105)
 
 void init_lcd_display() {
   lcd_init(LCD_DEFAULT_SPI_CLOCK_SPEED);
   init_brightness_control();
 
-  /* Print UI background */
-  lcd_fill_rect(240 + LCD_UI_BORDER_WIDTH, LCD_UI_BORDER_WIDTH,
-                80 - LCD_UI_BORDER_WIDTH * 2, 240 - LCD_UI_BORDER_WIDTH * 2,
-                LCD_UI_COLOR_BACKGROUND);
+  render_player_to_lcd(get_player(1), true);
+  render_player_to_lcd(get_player(2), true);
+}
 
-  /* Print horizontal seperation */
-  lcd_fill_rect(240 + LCD_UI_BORDER_WIDTH, 120 - LCD_UI_BORDER_WIDTH / 2,
-                80 - LCD_UI_BORDER_WIDTH * 2, LCD_UI_BORDER_WIDTH,
-                LCD_UI_COLOR_BORDER);
+static void render_player_status(player_t *player,
+                                 uint8_t x_offset,
+                                 uint8_t y_offset,
+                                 bool force) {
+  uint8_t health_bar_filled_width;
+  uint8_t health_bar_empty_width;
 
-  /* Print left and right border */
-  lcd_fill_rect(240, 0, LCD_UI_BORDER_WIDTH, 240, LCD_UI_COLOR_BORDER);
-  lcd_fill_rect(320 - LCD_UI_BORDER_WIDTH, 0, LCD_UI_BORDER_WIDTH, 240,
-                LCD_UI_COLOR_BORDER);
+  if (force) {
+    texture_render(TEXTURE_UI, x_offset, y_offset, 1);
 
-  /* Print top and bottom border */
-  lcd_fill_rect(240 + LCD_UI_BORDER_WIDTH, 0, 80 - LCD_UI_BORDER_WIDTH * 2,
-                LCD_UI_BORDER_WIDTH, LCD_UI_COLOR_BORDER);
-  lcd_fill_rect(240 + LCD_UI_BORDER_WIDTH, 240 - LCD_UI_BORDER_WIDTH,
-                80 - LCD_UI_BORDER_WIDTH * 2, LCD_UI_BORDER_WIDTH,
-                LCD_UI_COLOR_BORDER);
-
-  /* Print player info */
-  uint8_t i;
-  player_t *player;
-  for (i = 0; i < PLAYER_COUNT; i++) {
-    player = get_player(i + 1);
-
-    /* Determine top and left of player ui */
-    uint16_t top = LCD_UI_BORDER_WIDTH + (120 - LCD_UI_BORDER_WIDTH / 2) * i;
-    uint16_t left = 240 + LCD_UI_BORDER_WIDTH;
-
-    /* Print health bar */
-    lcd_fill_rect(left, top + LCD_UI_HEALTH_BAR_OFFSET_Y,
-                  80 - LCD_UI_BORDER_WIDTH * 2, LCD_UI_HEALTH_BAR_HEIGHT,
-                  LCD_UI_HEALTH_BAR_BORDER_COLOR);
-
-    /* Set top and left to avatar box */
-    top += LCD_UI_AVATAR_OFFSET_Y;
-    left += (80 - LCD_UI_AVATAR_WIDTH) / 2 - LCD_UI_BORDER_WIDTH -
-            LCD_UI_AVATAR_BORDER_WIDTH;
-
-    /* Render avatar border */
-    lcd_fill_rect(left, top,
-                  LCD_UI_AVATAR_WIDTH + LCD_UI_AVATAR_BORDER_WIDTH * 2,
-                  LCD_UI_AVATAR_HEIGHT + LCD_UI_AVATAR_BORDER_WIDTH * 2,
-                  LCD_UI_COLOR_BORDER);
-
-    /* Render avatar */
-    lcd_fill_rect(left + LCD_UI_AVATAR_BORDER_WIDTH,
-                  top + LCD_UI_AVATAR_BORDER_WIDTH, LCD_UI_AVATAR_WIDTH,
-                  LCD_UI_AVATAR_HEIGHT, get_player_avatar(player));
+    texture_render((player->player_id == PLAYER_1_ID
+                    ? TEXTURE_PLAYER_1
+                    : TEXTURE_PLAYER_2),
+                   x_offset + LCD_UI_AVATAR_OFFSET_X,
+                   y_offset + LCD_UI_AVATAR_OFFSET_Y,
+                   3);
   }
-}
-
-static void render_lcd_square(uint8_t x, uint8_t y, lcd_color color) {
-  lcd_fill_rect(x * LCD_SQUARE_SIZE,
-                y * LCD_SQUARE_SIZE,
-                LCD_SQUARE_SIZE,
-                LCD_SQUARE_SIZE,
-                color);
-}
-
-void render_player_to_lcd(player_t *player) {
-  uint8_t id = player->player_id - 1;
-  uint8_t top = LCD_UI_BORDER_WIDTH + (120 - LCD_UI_BORDER_WIDTH / 2) * id;
-  uint8_t left = 240 + LCD_UI_BORDER_WIDTH;
 
   if (get_player_flag(player, PLAYER_FLAG_SCORE_UPDATED)) {
-    lcd_render_integer(left + LCD_UI_SCORE_OFFSET_X,
-                       top + LCD_UI_SCORE_OFFSET_Y, player->score,
-                       LCD_UI_COLOR_SCORE, LCD_UI_COLOR_BACKGROUND, 2,
-                       80 - LCD_UI_BORDER_WIDTH * 2 - LCD_UI_SCORE_OFFSET_X);
+    lcd_render_integer(x_offset + LCD_UI_SCORE_OFFSET_X,
+                       y_offset + LCD_UI_SCORE_OFFSET_Y,
+                       player->score,
+                       LCD_UI_COLOR_SCORE,
+                       LCD_UI_COLOR_SCORE_BACKGROUND,
+                       2,
+                       LCD_UI_SCORE_WIDTH);
   }
 
   if (get_player_flag(player, PLAYER_FLAG_HEALTH_UPDATED)) {
-    uint16_t bar_width = 80 - LCD_UI_BORDER_WIDTH * 2;
-    uint16_t health_pixels = player->lives * bar_width / PLAYER_DEFAULT_LIVES;
-    uint16_t damage_pixels = bar_width - health_pixels;
+    health_bar_filled_width = (player->lives
+                               * LCD_UI_HEALTH_BAR_WIDTH
+                               / PLAYER_DEFAULT_LIVES);
+    health_bar_empty_width = LCD_UI_HEALTH_BAR_WIDTH - health_bar_filled_width;
 
-    lcd_fill_rect(left, top + LCD_UI_HEALTH_BAR_OFFSET_Y +
-                            LCD_UI_HEALTH_BAR_BORDER_WIDTH,
-                  health_pixels,
-                  LCD_UI_HEALTH_BAR_HEIGHT - LCD_UI_HEALTH_BAR_BORDER_WIDTH * 2,
+    lcd_fill_rect(x_offset + LCD_UI_HEALTH_BAR_OFFSET_X,
+                  y_offset + LCD_UI_HEALTH_BAR_OFFSET_Y,
+                  health_bar_filled_width,
+                  LCD_UI_HEALTH_BAR_HEIGHT,
                   LCD_UI_HEALTH_BAR_COLOR_1);
-    lcd_fill_rect(left + health_pixels, top + LCD_UI_HEALTH_BAR_OFFSET_Y +
-                                            LCD_UI_HEALTH_BAR_BORDER_WIDTH,
-                  damage_pixels,
-                  LCD_UI_HEALTH_BAR_HEIGHT - LCD_UI_HEALTH_BAR_BORDER_WIDTH * 2,
+    lcd_fill_rect((x_offset
+                   + LCD_UI_HEALTH_BAR_OFFSET_X
+                   + health_bar_filled_width),
+                  y_offset + LCD_UI_HEALTH_BAR_OFFSET_Y,
+                  health_bar_empty_width,
+                  LCD_UI_HEALTH_BAR_HEIGHT,
                   LCD_UI_HEALTH_BAR_COLOR_2);
+  }
+}
+
+void render_player_to_lcd(player_t *player, bool force) {
+  if (player->player_id == 1) {
+    render_player_status(player,
+                         LCD_UI_X + LCD_UI_PLAYER_1_OFFSET_X,
+                         LCD_UI_PLAYER_1_OFFSET_Y,
+                         force);
+  } else if (player->player_id == 2) {
+    render_player_status(player,
+                         LCD_UI_X + LCD_UI_PLAYER_2_OFFSET_X,
+                         LCD_UI_PLAYER_2_OFFSET_Y,
+                         force);
   }
 }
 
@@ -151,7 +107,10 @@ void render_to_lcd(uint8_t x, uint8_t y) {
   for (i = 0; i < PLAYER_COUNT; i++) {
     player = get_player(i + 1);
     if (player->x == x && player->y == y && player->lives) {
-      render_lcd_square(x, y, get_player_avatar(player));
+      texture_render((i == 0 ? TEXTURE_PLAYER_1 : TEXTURE_PLAYER_2),
+                     x * LCD_SQUARE_SIZE,
+                     y * LCD_SQUARE_SIZE,
+                     1);
       return;
     }
   }
@@ -160,57 +119,67 @@ void render_to_lcd(uint8_t x, uint8_t y) {
   switch (tile_type(*tile)) {
   case TILE_TYPE_EMPTY:
     if (tile_contains_bomb(*tile)) {
-      render_lcd_square(x, y, LCD_COLOR_BOMB);
+      texture_render((get_bomb(x, y)->player->player_id == 1
+                      ? TEXTURE_BOMB_PLAYER_1
+                      : TEXTURE_BOMB_PLAYER_2),
+                     x * LCD_SQUARE_SIZE,
+                     y * LCD_SQUARE_SIZE,
+                     1);
     } else if (tile_contains_explosion(*tile)) {
-      render_lcd_square(x, y, LCD_COLOR_EXPLOSION);
+      texture_render(TEXTURE_EXPLOSION,
+                     x * LCD_SQUARE_SIZE,
+                     y * LCD_SQUARE_SIZE,
+                     1);
     } else {
       tile_upgrade_t upgrade = tile_upgrade(*tile);
       switch (upgrade) {
       case TILE_UPGRADE_SPEED:
-        render_lcd_square(x, y, LCD_COLOR_UPGRADE_SPEED);
-        lcd_render_character(x * LCD_SQUARE_SIZE + 4,
-                             y * LCD_SQUARE_SIZE,
-                             FONT_CHAR_s,
-                             RGB(0, 0, 0),
-                             LCD_COLOR_UPGRADE_SPEED,
-                             2);
+        texture_render(TEXTURE_UPGRADE_SPEED,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
         break;
       case TILE_UPGRADE_BOMBS:
-        render_lcd_square(x, y, LCD_COLOR_UPGRADE_BOMBS);
-        lcd_render_character(x * LCD_SQUARE_SIZE + 4,
-                             y * LCD_SQUARE_SIZE,
-                             FONT_CHAR_b,
-                             RGB(0, 0, 0),
-                             LCD_COLOR_UPGRADE_BOMBS,
-                             2);
-
+        texture_render(TEXTURE_UPGRADE_BOMBS,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
         break;
       case TILE_UPGRADE_RANGE:
-        render_lcd_square(x, y, LCD_COLOR_UPGRADE_RANGE);
-        lcd_render_character(x * LCD_SQUARE_SIZE + 4,
-                             y * LCD_SQUARE_SIZE,
-                             FONT_CHAR_r,
-                             RGB(0, 0, 0),
-                             LCD_COLOR_UPGRADE_RANGE,
-                             2);
+        texture_render(TEXTURE_UPGRADE_RANGE,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
         break;
       case TILE_UPGRADE_NONE: /* no options left */
-        render_lcd_square(x, y, LCD_COLOR_UPGRADE_NONE);
+        texture_render(TEXTURE_EMPTY,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
         break;
       }
     }
     break;
 
   case TILE_TYPE_SOLID:
-    render_lcd_square(x, y, LCD_COLOR_SOLID);
+    texture_render(TEXTURE_SOLID,
+                   x * LCD_SQUARE_SIZE,
+                   y * LCD_SQUARE_SIZE,
+                   1);
     break;
 
   case TILE_TYPE_STATIC:
-    render_lcd_square(x, y, LCD_COLOR_STATIC);
+    texture_render(TEXTURE_STATIC,
+                   x * LCD_SQUARE_SIZE,
+                   y * LCD_SQUARE_SIZE,
+                   1);
     break;
 
   default:
-    render_lcd_square(x, y, LCD_COLOR_UNKNOWN);
+    texture_render(TEXTURE_ERROR,
+                   x * LCD_SQUARE_SIZE,
+                   y * LCD_SQUARE_SIZE,
+                   1);
     break;
   }
 }

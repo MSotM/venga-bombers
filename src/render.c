@@ -28,7 +28,7 @@ static void render_to_displays(uint8_t x, uint8_t y) {
 
 static void render_player_to_displays(player_t *player) {
   #ifdef RENDER_LCD
-    render_player_to_lcd(player);
+    render_player_to_lcd(player, false);
   #endif
 
   #ifdef RENDER_SEVEN_SEGMENT
