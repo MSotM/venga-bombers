@@ -4,6 +4,22 @@
 static bomb_t bombs[BOMB_COUNT];
 static uint8_t next_bomb_index = 0;
 
+bomb_t *get_bomb(uint8_t x, uint8_t y) {
+  size_t i;
+  bomb_t *bomb;
+  for (i = 0; i < EXPLOSION_COUNT; i++) {
+    bomb = &(bombs[i]);
+
+    if (bomb->x == x
+        && bomb->y == y
+        && bomb->player) {
+      return bomb;
+    }
+  }
+
+  return NULL;
+}
+
 void update_bombs() {
   int i;
   bomb_t *bomb;

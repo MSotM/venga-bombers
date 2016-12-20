@@ -185,6 +185,11 @@ typedef struct {
 } bomb_t;
 
 /*
+ * Find a bomb instance based on its location.
+ */
+bomb_t *get_bomb(uint8_t x, uint8_t y);
+
+/*
  * Update all bombs' countdowns and trigger them if they reach 0. Gets called
  * by update_world, so you don't have to.
  */
