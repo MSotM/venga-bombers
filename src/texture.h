@@ -71,7 +71,9 @@ uint8_t texture_color_count(texture_header_t header);
 texture_unit_size_t texture_unit_size(texture_header_t header);
 texture_encoding_t texture_encoding(texture_header_t header);
 
-/* Texture declarations ---------------------------------------------------- */
+/* Texture declarations -------------------------------------------------------
+ * Definitions of these textures are in textures.c
+ */
 
 typedef uint16_t texture_t[];
 
@@ -81,6 +83,20 @@ typedef uint16_t texture_t[];
    | ((color_count << TEXTURE_HEADER_OFFSET_COLOR_COUNT)                \
       & TEXTURE_HEADER_MASK_COLOR_COUNT)                                \
    | unit_size | encoding)
+
+extern const texture_t TEXTURE_STATIC;
+extern const texture_t TEXTURE_SOLID;
+extern const texture_t TEXTURE_EMPTY;
+extern const texture_t TEXTURE_EXPLOSION;
+extern const texture_t TEXTURE_BOMB_PLAYER_1;
+extern const texture_t TEXTURE_BOMB_PLAYER_2;
+extern const texture_t TEXTURE_PLAYER_1;
+extern const texture_t TEXTURE_PLAYER_2;
+extern const texture_t TEXTURE_UPGRADE_RANGE;
+extern const texture_t TEXTURE_UPGRADE_BOMBS;
+extern const texture_t TEXTURE_UPGRADE_SPEED;
+extern const texture_t TEXTURE_ERROR;
+extern const texture_t TEXTURE_UI;
 
 /* Rendering --------------------------------------------------------------- */
 
