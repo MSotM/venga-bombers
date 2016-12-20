@@ -15,9 +15,9 @@
  *
  * - 3 bits <texture size>
  * - 4 bits <number of colors>
- * - 1 bits <encoding unit size>
+ * - 2 bits <encoding unit size>
  * - 1 bits <encoding type>
- * - 7 bits unused
+ * - 6 bits unused
  *
  * From these bits, we can calculate how many bits are needed for indexes into
  * the color table.
@@ -42,10 +42,10 @@ typedef uint16_t texture_header_t;
 #define TEXTURE_HEADER_MASK_COLOR_COUNT   0b0000000001111000
 #define TEXTURE_HEADER_OFFSET_COLOR_COUNT 3
 #define TEXTURE_HEADER_COLOR_COUNT_MAX    16
-#define TEXTURE_HEADER_MASK_UNIT_SIZE     0b0000000010000000
+#define TEXTURE_HEADER_MASK_UNIT_SIZE     0b0000000110000000
 #define TEXTURE_HEADER_OFFSET_UNIT_SIZE   7
-#define TEXTURE_HEADER_MASK_ENCODING      0b0000000100000000
-#define TEXTURE_HEADER_OFFSET_ENCODING    8
+#define TEXTURE_HEADER_MASK_ENCODING      0b0000001000000000
+#define TEXTURE_HEADER_OFFSET_ENCODING    9
 
 typedef struct {
   uint8_t width;
@@ -57,8 +57,10 @@ extern const texture_size_t texture_sizes[];
 #define TEXTURE_SIZE_80x120 1
 
 typedef enum {
-  TEXTURE_UNIT_SIZE_2_BITS = (0 << TEXTURE_HEADER_OFFSET_UNIT_SIZE),
-  TEXTURE_UNIT_SIZE_4_BITS = (1 << TEXTURE_HEADER_OFFSET_UNIT_SIZE)
+  TEXTURE_UNIT_SIZE_1_BITS = (0 << TEXTURE_HEADER_OFFSET_UNIT_SIZE),
+  TEXTURE_UNIT_SIZE_2_BITS = (1 << TEXTURE_HEADER_OFFSET_UNIT_SIZE),
+  TEXTURE_UNIT_SIZE_4_BITS = (2 << TEXTURE_HEADER_OFFSET_UNIT_SIZE),
+  TEXTURE_UNIT_SIZE_8_BITS = (3 << TEXTURE_HEADER_OFFSET_UNIT_SIZE)
 } texture_unit_size_t;
 
 typedef enum {

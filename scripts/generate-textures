@@ -94,7 +94,11 @@ TEXTURE_HEADER(~A, ~A, TEXTURE_UNIT_SIZE_~A_BITS, TEXTURE_ENCODING_PLAIN)"
   (let* ((image (imago:read-image input-path))
          (colors (image-colors image))
          (color-count (length colors))
-         (bit-size (if (<= color-count 4) 2 4)))
+         (bit-size (cond ((<= color-count 2)   1)
+                         ((<= color-count 4)   2)
+                         ((<= color-count 16)  4)
+                         ((<= color-count 256) 8)
+                         (t (error "Too many colors: ~A" color-count)))))
     (format nil "  ~A,~%~A~A"
             (texture-header (texture-size-index (imago:image-width image)
                                                 (imago:image-height image))
