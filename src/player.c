@@ -21,6 +21,7 @@ void init_players() {
   p1->max_bomb_quantity = PLAYER_DEFAULT_MAX_BOMB_QUANTITY;
   p1->score = 0;
   p1->flags = 0;
+  p1->texture = &TEXTURE_PLAYER_1_DOWN;
 
   p2->player_id = PLAYER_2_ID;
   p2->lives = PLAYER_DEFAULT_LIVES;
@@ -31,6 +32,7 @@ void init_players() {
   p2->max_bomb_quantity = PLAYER_DEFAULT_MAX_BOMB_QUANTITY;
   p2->score = 0;
   p2->flags = 0;
+  p2->texture = &TEXTURE_PLAYER_2_DOWN;
 }
 
 static void update_player(player_t *player) {
@@ -80,6 +82,34 @@ void update_players() {
   update_player(&(players[1]));
 }
 
+static const texture_t *player_movement_texture(player_t *player,
+                                                int8_t dx,
+                                                int8_t dy) {
+  if (player->player_id == 1) {
+    if (dx < 0) {
+      return &TEXTURE_PLAYER_1_LEFT;
+    } else if (dx > 0) {
+      return &TEXTURE_PLAYER_1_RIGHT;
+    } else if (dy < 0) {
+      return &TEXTURE_PLAYER_1_UP;
+    } else if (dy > 0) {
+      return &TEXTURE_PLAYER_1_DOWN;
+    }
+  } else {
+    if (dx < 0) {
+      return &TEXTURE_PLAYER_2_LEFT;
+    } else if (dx > 0) {
+      return &TEXTURE_PLAYER_2_RIGHT;
+    } else if (dy < 0) {
+      return &TEXTURE_PLAYER_2_UP;
+    } else if (dy > 0) {
+      return &TEXTURE_PLAYER_2_DOWN;
+    }
+  }
+
+  return &TEXTURE_PLAYER_1_DOWN;
+}
+
 bool player_move(player_t *player, int8_t dx, int8_t dy) {
   tile_t *current_tile, *next_tile;
 
@@ -89,12 +119,14 @@ bool player_move(player_t *player, int8_t dx, int8_t dy) {
   current_tile = world_tile(player->x, player->y);
   next_tile = world_tile(player->x + dx, player->y + dy);
 
+  player->texture = player_movement_texture(player, dx, dy);
+  tile_set_render_update(current_tile, true);
+
   if (!next_tile)                                return false;
   if (tile_contains_bomb(*next_tile))            return false;
   if (tile_type(*next_tile) == TILE_TYPE_STATIC) return false;
   if (tile_type(*next_tile) == TILE_TYPE_SOLID)  return false;
 
-  tile_set_render_update(current_tile, true);
   tile_set_render_update(next_tile, true);
 
   player->x = player->x + dx;

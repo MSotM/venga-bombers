@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include "options.h"
+#include "texture.h"
 
 extern uint8_t remote_id;
 extern uint8_t local_id;
@@ -130,6 +131,7 @@ typedef struct {
   uint8_t max_bomb_quantity;
   uint16_t score;
   uint8_t flags;
+  const texture_t *texture;
 } player_t;
 
 /*

@@ -48,9 +48,7 @@ static void render_player_status(player_t *player,
   if (force) {
     texture_render(TEXTURE_UI, x_offset, y_offset, 1);
 
-    texture_render((player->player_id == PLAYER_1_ID
-                    ? TEXTURE_PLAYER_1
-                    : TEXTURE_PLAYER_2),
+    texture_render(*player->texture,
                    x_offset + LCD_UI_AVATAR_OFFSET_X,
                    y_offset + LCD_UI_AVATAR_OFFSET_Y,
                    3);
@@ -107,7 +105,7 @@ void render_to_lcd(uint8_t x, uint8_t y) {
   for (i = 0; i < PLAYER_COUNT; i++) {
     player = get_player(i + 1);
     if (player->x == x && player->y == y && player->lives) {
-      texture_render((i == 0 ? TEXTURE_PLAYER_1 : TEXTURE_PLAYER_2),
+      texture_render(*player->texture,
                      x * LCD_SQUARE_SIZE,
                      y * LCD_SQUARE_SIZE,
                      1);
