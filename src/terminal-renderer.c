@@ -1,30 +1,16 @@
 #include <pleasant-usart.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include "game.h"
 
 static bool _initialized = false;
 
 static void usart_write_integer(int number) {
-  uint16_t lastExponent, digit, exponent;
-  lastExponent = 0;
+  uint8_t i;
+  char buf[6];
+  itoa(number, buf, 10);
 
-  // Print significant digits
-  do {
-    digit = number;
-    exponent = 1;
-    lastExponent = 0;
-    while (digit > 9) {
-      digit /= 10;
-      exponent *= 10;
-      lastExponent++;
-    }
-    usart_write(digit + '0');
-    number -= exponent * digit;
-  } while (number);
-
-  // Print trailing 0's
-  for(digit = 0; digit < lastExponent; digit++) {
-    usart_write('0');
+  for (i = 0; buf[i] != '\0'; i++) {
+    usart_write(buf[i]);
   }
 }
 
