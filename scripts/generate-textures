@@ -83,18 +83,30 @@ TEXTURE_HEADER(~A, ~A, TEXTURE_UNIT_SIZE_~A_BITS, TEXTURE_ENCODING_PLAIN)"
 
 (defun texture-pixels (image colors bit-size)
   (with-output-to-string (out)
+    (format out " ")
     (loop
+      with bit-count = 0
       for y below (imago:image-height image)
       do (loop
            for x below (imago:image-width image)
            for color-index = (position (imago:image-pixel image x y)
                                        colors)
-           do (cond
-                ((zerop x) (format out "  0b"))
-                ((zerop (mod (* x bit-size) 16))
-                 (princ ", 0b" out)))
-              (format out "~v,'0b" bit-size color-index))
-         (format out ",~%"))))
+           do
+              (when (zerop bit-count)
+                (format out " 0b"))
+              (format out "~v,'0b" bit-size color-index)
+              (incf bit-count bit-size)
+              (when (<= 16 bit-count)
+                (format out ",")
+                (setf bit-count 0)))
+         (when (zerop bit-count)
+           (terpri out)
+           (when (< y (1- (imago:image-height image)))
+             (princ " " out)))
+      finally (unless (or (zerop bit-count)
+                          (= 16 bit-count))
+                (loop repeat (- 16 bit-count)
+                      do (format out "0"))))))
 
 (defun image->texture-content (input-path)
   (let* ((image (imago:read-image input-path))
