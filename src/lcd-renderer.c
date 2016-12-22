@@ -1,7 +1,6 @@
 #include <pleasant-lcd.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include "game.h"
-#include "font.h"
 #include "texture.h"
 
 #define LCD_SQUARE_SIZE                16
@@ -38,6 +37,39 @@ void init_lcd_display() {
   render_player_to_lcd(get_player(2), true);
 }
 
+static void lcd_render_integer(int number,
+                               uint16_t x,
+                               uint16_t y,
+                               lcd_color text_color,
+                               lcd_color background_color,
+                               uint8_t scale) {
+  uint8_t i;
+  const texture_t *texture;
+
+  char buf[6];
+  itoa(number, buf, 10);
+
+  texture_set_secondary_colors(text_color, background_color);
+
+  for (i = 0; buf[i] != '\0'; i++) {
+    switch (buf[i]) {
+    case '0': texture = &TEXTURE_CHARACTER_0; break;
+    case '1': texture = &TEXTURE_CHARACTER_1; break;
+    case '2': texture = &TEXTURE_CHARACTER_2; break;
+    case '3': texture = &TEXTURE_CHARACTER_3; break;
+    case '4': texture = &TEXTURE_CHARACTER_4; break;
+    case '5': texture = &TEXTURE_CHARACTER_5; break;
+    case '6': texture = &TEXTURE_CHARACTER_6; break;
+    case '7': texture = &TEXTURE_CHARACTER_7; break;
+    case '8': texture = &TEXTURE_CHARACTER_8; break;
+    default:  texture = &TEXTURE_CHARACTER_9; break;
+    }
+
+    texture_render(*texture, x, y, scale);
+    x += texture_sizes[TEXTURE_SIZE_CHARACTER].width * scale;
+  }
+}
+
 static void render_player_status(player_t *player,
                                  uint8_t x_offset,
                                  uint8_t y_offset,
@@ -55,13 +87,12 @@ static void render_player_status(player_t *player,
   }
 
   if (get_player_flag(player, PLAYER_FLAG_SCORE_UPDATED)) {
-    lcd_render_integer(x_offset + LCD_UI_SCORE_OFFSET_X,
+    lcd_render_integer(player->score,
+                       x_offset + LCD_UI_SCORE_OFFSET_X,
                        y_offset + LCD_UI_SCORE_OFFSET_Y,
-                       player->score,
                        LCD_UI_COLOR_SCORE,
                        LCD_UI_COLOR_SCORE_BACKGROUND,
-                       2,
-                       LCD_UI_SCORE_WIDTH);
+                       2);
   }
 
   if (get_player_flag(player, PLAYER_FLAG_HEALTH_UPDATED)) {

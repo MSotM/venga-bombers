@@ -28,11 +28,23 @@ exec ros -Q -- $0 "$@"
     ("TEXTURE_PLAYER_2_RIGHT" . "textures/player-2-right.png")
     ("TEXTURE_PLAYER_2_LEFT"  . "textures/player-2-left.png")
     ("TEXTURE_ERROR"          . "textures/error.png")
-    ("TEXTURE_UI"             . "textures/ui.png")))
+    ("TEXTURE_UI"             . "textures/ui.png")
+    ;; Characters
+    ("TEXTURE_CHARACTER_0"    . "textures/character-0.png")
+    ("TEXTURE_CHARACTER_1"    . "textures/character-1.png")
+    ("TEXTURE_CHARACTER_2"    . "textures/character-2.png")
+    ("TEXTURE_CHARACTER_3"    . "textures/character-3.png")
+    ("TEXTURE_CHARACTER_4"    . "textures/character-4.png")
+    ("TEXTURE_CHARACTER_5"    . "textures/character-5.png")
+    ("TEXTURE_CHARACTER_6"    . "textures/character-6.png")
+    ("TEXTURE_CHARACTER_7"    . "textures/character-7.png")
+    ("TEXTURE_CHARACTER_8"    . "textures/character-8.png")
+    ("TEXTURE_CHARACTER_9"    . "textures/character-9.png")))
 
 (defparameter +texture-sizes+
   '(((16 . 16)  . 0)
-    ((80 . 120) . 1)))
+    ((80 . 120) . 1)
+    ((5  . 8)   . 2)))
 
 (defparameter +file-header+ "
 /*

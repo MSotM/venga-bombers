@@ -60,8 +60,10 @@ typedef struct {
 } texture_size_t;
 
 extern const texture_size_t texture_sizes[];
-#define TEXTURE_SIZE_16x16  0
-#define TEXTURE_SIZE_80x120 1
+
+#define TEXTURE_SIZE_TILE      0
+#define TEXTURE_SIZE_UI        1
+#define TEXTURE_SIZE_CHARACTER 2
 
 typedef enum {
   TEXTURE_UNIT_SIZE_1_BITS = (0 << TEXTURE_HEADER_OFFSET_UNIT_SIZE),
@@ -118,6 +120,17 @@ extern const texture_t TEXTURE_UPGRADE_BOMBS;
 extern const texture_t TEXTURE_UPGRADE_SPEED;
 extern const texture_t TEXTURE_ERROR;
 extern const texture_t TEXTURE_UI;
+
+extern const texture_t TEXTURE_CHARACTER_0;
+extern const texture_t TEXTURE_CHARACTER_1;
+extern const texture_t TEXTURE_CHARACTER_2;
+extern const texture_t TEXTURE_CHARACTER_3;
+extern const texture_t TEXTURE_CHARACTER_4;
+extern const texture_t TEXTURE_CHARACTER_5;
+extern const texture_t TEXTURE_CHARACTER_6;
+extern const texture_t TEXTURE_CHARACTER_7;
+extern const texture_t TEXTURE_CHARACTER_8;
+extern const texture_t TEXTURE_CHARACTER_9;
 
 /* Rendering --------------------------------------------------------------- */
 

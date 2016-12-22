@@ -1,10 +1,10 @@
-#include <pleasant-lcd.h>
 #include <avr/pgmspace.h>
 #include "texture.h"
 
 const texture_size_t texture_sizes[] = {
   {16, 16},
-  {80, 120}
+  {80, 120},
+  {5,  8},
 };
 
 /* Texture accessors ------------------------------------------------------- */
