@@ -88,9 +88,28 @@ static lcd_color next_pixel_value() {
   return current_texture.colors[render_state.unit];
 }
 
+static uint8_t texture_integer_unit_size(texture_header_t header) {
+  switch (texture_unit_size(header)) {
+  case TEXTURE_UNIT_SIZE_1_BITS: return 1;
+  case TEXTURE_UNIT_SIZE_2_BITS: return 2;
+  case TEXTURE_UNIT_SIZE_4_BITS: return 4;
+  case TEXTURE_UNIT_SIZE_8_BITS: return 8;
+  default:                       return 0;
+  }
+}
+
+static uint8_t texture_unit_mask(uint8_t integer_unit_size) {
+  switch (integer_unit_size) {
+  case 1: return 0b1;
+  case 2: return 0b11;
+  case 4: return 0b1111;
+  case 8: return 0b11111111;
+  default: return 0;
+  }
+}
+
 static void parse_texture(const texture_t texture) {
   uint8_t i;
-  texture_unit_size_t unit_size;
 
   render_state.word_pointer = texture;
   render_state.word = pgm_read_word(render_state.word_pointer);
@@ -99,11 +118,10 @@ static void parse_texture(const texture_t texture) {
   current_texture.color_count = texture_color_count(render_state.word);
   current_texture.encoding = texture_encoding(render_state.word);
 
-  unit_size = texture_unit_size(render_state.word);
   render_state.unit_offset = 0;
 
-  current_texture.unit_size = unit_size == TEXTURE_UNIT_SIZE_2_BITS ? 2 : 4;
-  current_texture.unit_mask = current_texture.unit_size == 2 ? 0b11 : 0b1111;
+  current_texture.unit_size = texture_integer_unit_size(render_state.word);
+  current_texture.unit_mask = texture_unit_mask(current_texture.unit_size);
 
   for (i = 0; i < current_texture.color_count; i++) {
     current_texture.colors[i] = pgm_read_word(++render_state.word_pointer);
