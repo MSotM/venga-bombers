@@ -29,6 +29,20 @@ texture_encoding_t texture_encoding(texture_header_t header) {
 
 /* Render state ------------------------------------------------------------ */
 
+const lcd_color TEXTURE_SECONDARY_COLOR_INDICATOR_1 = RGB(251, 251, 251);
+const lcd_color TEXTURE_SECONDARY_COLOR_INDICATOR_2 = RGB(247, 247, 247);
+
+static lcd_color secondary_colors[] = {
+  RGB(0, 0, 0),
+  RGB(255, 255, 255),
+};
+
+void texture_set_secondary_colors(lcd_color secondary_color_1,
+                                  lcd_color secondary_color_2) {
+  secondary_colors[0] = secondary_color_1;
+  secondary_colors[1] = secondary_color_2;
+}
+
 static struct {
   texture_size_t size;
   uint8_t color_count;
@@ -110,6 +124,7 @@ static uint8_t texture_unit_mask(uint8_t integer_unit_size) {
 
 static void parse_texture(const texture_t texture) {
   uint8_t i;
+  lcd_color color;
 
   render_state.word_pointer = texture;
   render_state.word = pgm_read_word(render_state.word_pointer);
@@ -124,7 +139,15 @@ static void parse_texture(const texture_t texture) {
   current_texture.unit_mask = texture_unit_mask(current_texture.unit_size);
 
   for (i = 0; i < current_texture.color_count; i++) {
-    current_texture.colors[i] = pgm_read_word(++render_state.word_pointer);
+    color = pgm_read_word(++render_state.word_pointer);
+
+    if (color == (lcd_color)TEXTURE_SECONDARY_COLOR_INDICATOR_1) {
+      color = secondary_colors[0];
+    } else if (color == (lcd_color)TEXTURE_SECONDARY_COLOR_INDICATOR_2) {
+      color = secondary_colors[1];
+    }
+
+    current_texture.colors[i] = color;
   }
 }
 

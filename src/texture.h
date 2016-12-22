@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <avr/pgmspace.h>
+#include <pleasant-lcd.h>
 
 /* Texture ----------------------------------------------------------------- */
 
@@ -33,6 +34,12 @@
  * pixels should be filled with the associated color.
  *
  * In both cases any bits left in the final word are unused.
+ *
+ * The color table immediately follows the header, and consists of <number of
+ * colors> words. There are two special colors which, when encountered, will
+ * not actually be used in rendering the image. They will instead be read from
+ * a secondary color table. These are TEXTURE_SECONDARY_COLOR_INDICATOR_1 and
+ * TEXTURE_SECONDARY_COLOR_INDICATOR_2.
  */
 
 typedef uint16_t texture_header_t;
@@ -72,6 +79,12 @@ texture_size_t texture_size(texture_header_t header);
 uint8_t texture_color_count(texture_header_t header);
 texture_unit_size_t texture_unit_size(texture_header_t header);
 texture_encoding_t texture_encoding(texture_header_t header);
+
+extern const lcd_color TEXTURE_SECONDARY_COLOR_INDICATOR_1;
+extern const lcd_color TEXTURE_SECONDARY_COLOR_INDICATOR_2;
+
+void texture_set_secondary_colors(lcd_color secondary_color_1,
+                                  lcd_color secondary_color_2);
 
 /* Texture declarations -------------------------------------------------------
  * Definitions of these textures are in textures.c
