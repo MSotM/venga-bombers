@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <stdbool.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include "options.h"
 
 extern uint8_t remote_id;
