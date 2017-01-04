@@ -17,7 +17,7 @@ void init_seven_segment() {
 }
 
 void render_player_to_seven_segment(player_t *player) {
-	if (get_player_flag(player, PLAYER_FLAG_HEALTH_UPDATED)) {
+	if (get_player_flag(player, PLAYER_FLAG_HEALTH_UPDATED) && player->player_id == remote_id) {
 		uint8_t lives = player->lives;
 
 		// Set output to pins

@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include "options.h"
 
+extern uint8_t remote_id;
+extern uint8_t local_id;
+
+
 /* Tile -----------------------------------------------------------------------
  * Tiles are stored in a single byte, for efficiency. Different bits in the
  * byte signify properties of the tile. These positions can be seen in the
