@@ -61,9 +61,11 @@ typedef struct {
 
 extern const texture_size_t texture_sizes[];
 
-#define TEXTURE_SIZE_TILE      0
-#define TEXTURE_SIZE_UI        1
-#define TEXTURE_SIZE_CHARACTER 2
+#define TEXTURE_SIZE_TILE        0
+#define TEXTURE_SIZE_UI          1
+#define TEXTURE_SIZE_CHARACTER   2
+#define TEXTURE_SIZE_PLAY_BUTTON 3
+#define TEXTURE_SIZE_MENU_TITLE  4
 
 typedef enum {
   TEXTURE_UNIT_SIZE_1_BITS = (0 << TEXTURE_HEADER_OFFSET_UNIT_SIZE),
