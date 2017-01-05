@@ -211,13 +211,12 @@ void render_to_lcd(uint8_t x, uint8_t y) {
 }
 
 void render_menu_background_to_lcd() {
-  lcd_fill_screen(RGB(255, 255, 255));
-
   uint8_t width = LCD_WIDTH / LCD_SQUARE_SIZE;
   uint8_t height = LCD_HEIGHT / LCD_SQUARE_SIZE;
+  uint8_t x, y;
 
-  for (uint8_t x = 0; x < width; x++) {
-    for (uint8_t y = 0; y < height; y++) {
+  for (x = 0; x < width; x++) {
+    for (y = 0; y < height; y++) {
       if (x == 0 || x == width - 1 ||
           y == 0 || y == height - 1) {
         texture_render(TEXTURE_STATIC,
@@ -251,23 +250,19 @@ void render_menu_to_lcd() {
   /* Title space */
   uint16_t title_pos_x = 5 * LCD_SQUARE_SIZE;
   uint16_t title_pos_y = 2 * LCD_SQUARE_SIZE;
-  uint16_t title_width = 10 * LCD_SQUARE_SIZE;
-  uint16_t title_height = 2 * LCD_SQUARE_SIZE;
-  lcd_fill_rect(title_pos_x,
-                title_pos_y,
-                title_width,
-                title_height,
-                RGB(255, 255, 255));
+  texture_render(TEXTURE_MENU_TITLE,
+                 title_pos_x,
+                 title_pos_y,
+                 1);
 
   /* Play button space */
   uint16_t play_button_width = 80, play_button_height = 30;
   uint16_t play_button_pos_x = (LCD_WIDTH / 2) - (play_button_width / 2);
   uint16_t play_button_pos_y = (LCD_HEIGHT / 2) - (play_button_height / 2);
-  lcd_fill_rect(play_button_pos_x,
-                play_button_pos_y,
-                play_button_width,
-                play_button_height,
-                RGB(255, 255, 255));
+  texture_render(TEXTURE_PLAY_BUTTON,
+                 play_button_pos_x,
+                 play_button_pos_y,
+                 1);
 }
 
 void update_lcd_brightness() {
