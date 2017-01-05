@@ -48,9 +48,10 @@ void execute_current_state() {
   }
 }
 
-/* _menu -------------------------------------------------------------------- */
+/* MENU -------------------------------------------------------------------- */
 
 void enter_menu() {
+  render_menu_background_to_lcd();
   render_menu_to_lcd();
 }
 

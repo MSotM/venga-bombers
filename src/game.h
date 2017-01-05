@@ -329,6 +329,7 @@ void init_lcd_display();
 void update_lcd_brightness();
 void render_to_lcd(uint8_t x, uint8_t y);
 void render_player_to_lcd(player_t *player, bool force);
+void render_menu_background_to_lcd();
 void render_menu_to_lcd();
 
 /*

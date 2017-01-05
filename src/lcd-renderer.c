@@ -210,20 +210,56 @@ void render_to_lcd(uint8_t x, uint8_t y) {
   }
 }
 
-void render_menu_to_lcd() {
+void render_menu_background_to_lcd() {
   lcd_fill_screen(RGB(255, 255, 255));
 
-  /* TITLE SPACE */
-  uint16_t title_width = 240, title_height = 40;
-  uint16_t title_pos_x = (LCD_WIDTH / 2) - (title_width / 2);
-  uint16_t title_pos_y = 5;
+  uint8_t width = LCD_WIDTH / LCD_SQUARE_SIZE;
+  uint8_t height = LCD_HEIGHT / LCD_SQUARE_SIZE;
+
+  for (uint8_t x = 0; x < width; x++) {
+    for (uint8_t y = 0; y < height; y++) {
+      if (x == 0 || x == width - 1 ||
+          y == 0 || y == height - 1) {
+        texture_render(TEXTURE_STATIC,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
+      }
+
+      if (x > 0 && x < width - 1 &&
+          y > 0 && y < height - 1) {
+        texture_render(TEXTURE_EMPTY,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
+      }
+    }
+  }
+
+  texture_render(TEXTURE_PLAYER_1_DOWN,
+                 2 * LCD_SQUARE_SIZE,
+                 2 * LCD_SQUARE_SIZE,
+                 2);
+
+  texture_render(TEXTURE_PLAYER_2_DOWN,
+                 (width - 4) * LCD_SQUARE_SIZE,
+                 2 * LCD_SQUARE_SIZE,
+                 2);
+}
+
+void render_menu_to_lcd() {
+  /* Title space */
+  uint16_t title_pos_x = 5 * LCD_SQUARE_SIZE;
+  uint16_t title_pos_y = 2 * LCD_SQUARE_SIZE;
+  uint16_t title_width = 10 * LCD_SQUARE_SIZE;
+  uint16_t title_height = 2 * LCD_SQUARE_SIZE;
   lcd_fill_rect(title_pos_x,
                 title_pos_y,
                 title_width,
                 title_height,
-                RGB(0, 0, 0));
+                RGB(255, 255, 255));
 
-  /* PLAY BUTTON SPACE */
+  /* Play button space */
   uint16_t play_button_width = 80, play_button_height = 30;
   uint16_t play_button_pos_x = (LCD_WIDTH / 2) - (play_button_width / 2);
   uint16_t play_button_pos_y = (LCD_HEIGHT / 2) - (play_button_height / 2);
@@ -231,7 +267,7 @@ void render_menu_to_lcd() {
                 play_button_pos_y,
                 play_button_width,
                 play_button_height,
-                RGB(0, 0, 0));
+                RGB(255, 255, 255));
 }
 
 void update_lcd_brightness() {
