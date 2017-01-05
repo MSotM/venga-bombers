@@ -29,6 +29,8 @@ exec ros -Q -- $0 "$@"
     ("TEXTURE_PLAYER_2_LEFT"  . "textures/player-2-left.png")
     ("TEXTURE_ERROR"          . "textures/error.png")
     ("TEXTURE_UI"             . "textures/ui.png")
+    ("TEXTURE_PLAY_BUTTON"    . "textures/play-button.png")
+    ("TEXTURE_MENU_TITLE"     . "textures/menu-title.png")
     ;; Characters
     ("TEXTURE_CHARACTER_0"    . "textures/character-0.png")
     ("TEXTURE_CHARACTER_1"    . "textures/character-1.png")
@@ -44,7 +46,9 @@ exec ros -Q -- $0 "$@"
 (defparameter +texture-sizes+
   '(((16 . 16)  . 0)
     ((80 . 120) . 1)
-    ((5  . 8)   . 2)))
+    ((5  . 8)   . 2)
+    ((80 . 30)  . 3)
+    ((160 . 32) . 4)))
 
 (defparameter +file-header+ "
 /*

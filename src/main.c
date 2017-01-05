@@ -8,6 +8,8 @@ uint8_t remote_id = 1;
 uint8_t local_id = 2;
 
 int main() {
+  pre_init_music();
+
   /* This boolean indicates whether the game needs to update its events and
    * logic */
   bool progress = false;
@@ -15,8 +17,6 @@ int main() {
   /* Set A2 as input with pullup */
   DDRC &= ~_BV(PORTC2);
   PORTC |= _BV(PORTC2);
-
-  pre_init_music();
 
   /* Timer zero is responsible for generating tones. It does not have a
    * constant prescaler making it unsuitable for measuring certain units.
@@ -46,18 +46,18 @@ int main() {
 
   TIMER2_COMPARE_A = 49;
 
-
   /* This function must be called before initializations. */
   sei();
 
   /* Initialize needed components */
   timeout_timer_init();
-  init_world();
   init_render();
   init_controls();
   post_init_music();
   /* Set the initial game loop timeout */
   set_timeout(&progress, 40);
+
+  switch_state(GAME_STATE_MENU);
 
   while (true) {
     /* Handle game logic */
@@ -67,14 +67,12 @@ int main() {
       set_timeout(&progress, 40);
 
       /* Process game actions */
+      execute_current_state();
       handle_events();
-      update_world();
     }
 
     conduct();
-    /* Render the game as fast as it can */
-    render(false);
-    process_controls();
+
     /* Timeouts will be cleared on the main thread, because heap_pop is
      * expensive. Though the given boolean will be very accurate */
     clear_elapsed_timeouts();

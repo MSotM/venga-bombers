@@ -32,9 +32,6 @@
 void init_lcd_display() {
   lcd_init(LCD_DEFAULT_SPI_CLOCK_SPEED);
   init_brightness_control();
-
-  render_player_to_lcd(get_player(1), true);
-  render_player_to_lcd(get_player(2), true);
 }
 
 static void lcd_render_integer(int number,
@@ -211,6 +208,61 @@ void render_to_lcd(uint8_t x, uint8_t y) {
                    1);
     break;
   }
+}
+
+void render_menu_background_to_lcd() {
+  uint8_t width = LCD_WIDTH / LCD_SQUARE_SIZE;
+  uint8_t height = LCD_HEIGHT / LCD_SQUARE_SIZE;
+  uint8_t x, y;
+
+  for (x = 0; x < width; x++) {
+    for (y = 0; y < height; y++) {
+      if (x == 0 || x == width - 1 ||
+          y == 0 || y == height - 1) {
+        texture_render(TEXTURE_STATIC,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
+      }
+
+      if (x > 0 && x < width - 1 &&
+          y > 0 && y < height - 1) {
+        texture_render(TEXTURE_EMPTY,
+                       x * LCD_SQUARE_SIZE,
+                       y * LCD_SQUARE_SIZE,
+                       1);
+      }
+    }
+  }
+
+  texture_render(TEXTURE_PLAYER_1_DOWN,
+                 2 * LCD_SQUARE_SIZE,
+                 2 * LCD_SQUARE_SIZE,
+                 2);
+
+  texture_render(TEXTURE_PLAYER_2_DOWN,
+                 (width - 4) * LCD_SQUARE_SIZE,
+                 2 * LCD_SQUARE_SIZE,
+                 2);
+}
+
+void render_menu_to_lcd() {
+  /* Title space */
+  uint16_t title_pos_x = 5 * LCD_SQUARE_SIZE;
+  uint16_t title_pos_y = 2 * LCD_SQUARE_SIZE;
+  texture_render(TEXTURE_MENU_TITLE,
+                 title_pos_x,
+                 title_pos_y,
+                 1);
+
+  /* Play button space */
+  uint16_t play_button_width = 80, play_button_height = 30;
+  uint16_t play_button_pos_x = (LCD_WIDTH / 2) - (play_button_width / 2);
+  uint16_t play_button_pos_y = (LCD_HEIGHT / 2) - (play_button_height / 2);
+  texture_render(TEXTURE_PLAY_BUTTON,
+                 play_button_pos_x,
+                 play_button_pos_y,
+                 1);
 }
 
 void update_lcd_brightness() {

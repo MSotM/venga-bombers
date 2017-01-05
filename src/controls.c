@@ -1,6 +1,8 @@
 #include <pleasant-usart.h>
 #include <pleasant-twi.h>
+#include <pleasant-lcd.h>
 #include "game.h"
+#include "touch-buttons.h"
 
 /* Terminal controls ------------------------------------------------------- */
 
@@ -14,7 +16,7 @@ static bool terminal_controls_init() {
   return true;
 }
 
-static void terminal_controls_process() {
+static void terminal_game_controls_process() {
   enum usart_error error;
   uint8_t input;
   while (usart_byte_available()) {
@@ -31,6 +33,17 @@ static void terminal_controls_process() {
     case 'l': queue_event(EVENT_TYPE_MOVE_RIGHT, 2); break;
     case 'q': queue_event(EVENT_TYPE_PLACE_BOMB, 1); break;
     case 'u': queue_event(EVENT_TYPE_PLACE_BOMB, 2); break;
+    }
+  }
+}
+
+static void terminal_menu_controls_process() {
+  enum usart_error error;
+  uint8_t input;
+  while (usart_byte_available()) {
+    input = usart_read(&error);
+    switch (input) {
+      case ' ': switch_state(GAME_STATE_PLAYING); break;
     }
   }
 }
@@ -73,7 +86,7 @@ static bool nunchuck_controls_finish_read() {
   return write_succeeded && twi_error == TWI_ERROR_NONE;
 }
 
-static bool nunchuck_controls_process() {
+static bool nunchuck_game_controls_process() {
   /* The first read we do results in bogus data, which should be ignored. */
   static bool ignore_read = true;
 
@@ -116,10 +129,67 @@ static bool nunchuck_controls_process() {
   return true;
 }
 
+/* Touch controls ---------------------------------------------------------- */
+touch_button_t menu_buttons[NUM_MENU_BUTTONS];
+
+touch_button_t menu_button_play = {.x      = 120,
+                                   .y      = 105,
+                                   .width  = 80,
+                                   .height = 30,
+                                   .index  = MENU_BUTTON_PLAY};
+
+static bool touch_controls_init() {
+  lcd_touch_start_calibration();
+
+  menu_buttons[MENU_BUTTON_PLAY] = menu_button_play;
+
+  return true;
+}
+
+static uint8_t touch_controls_read(uint16_t touch_x,
+                                   uint16_t touch_y,
+                                   touch_button_t *buttons,
+                                   uint8_t num_buttons) {
+  for (uint8_t button_index = 0;
+       button_index < num_buttons;
+       button_index++) {
+    if (is_button_pressed(touch_x, touch_y, buttons[button_index])) {
+      return buttons[button_index].index;
+    }
+  }
+
+  return NO_BUTTON_PRESSED;
+}
+
+static touch_menu_button_t touch_menu_controls_read(uint16_t touch_x,
+                                                    uint16_t touch_y) {
+  return (touch_menu_button_t) touch_controls_read(touch_x,
+                                                   touch_y,
+                                                   menu_buttons,
+                                                   NUM_MENU_BUTTONS);
+}
+
+static void touch_menu_controls_process() {
+  uint16_t x, y;
+
+  if (lcd_touch_read(NULL, &x, &y)) {
+    touch_menu_button_t button = touch_menu_controls_read(x, y);
+
+    switch (button) {
+    case MENU_BUTTON_PLAY: switch_state(GAME_STATE_PLAYING); break;
+
+    case NUM_MENU_BUTTONS:
+    default:
+      break;
+    }
+  }
+}
+
 /* Controls ---------------------------------------------------------------- */
 
 static bool terminal_controls_enabled = false;
 static bool nunchuck_controls_enabled = false;
+static bool touch_controls_enabled = false;
 
 void init_controls() {
 #ifdef CONTROLS_TERMINAL
@@ -129,9 +199,18 @@ void init_controls() {
 #ifdef CONTROLS_NUNCHUCK
   nunchuck_controls_enabled = nunchuck_controls_init();
 #endif
+
+#ifdef CONTROLS_TOUCH
+  touch_controls_enabled = touch_controls_init();
+#endif
 }
 
-void process_controls() {
-  if (terminal_controls_enabled) terminal_controls_process();
-  if (nunchuck_controls_enabled) nunchuck_controls_process();
+void process_game_controls() {
+  if (terminal_controls_enabled) terminal_game_controls_process();
+  if (nunchuck_controls_enabled) nunchuck_game_controls_process();
+}
+
+void process_menu_controls() {
+  if (terminal_controls_enabled) terminal_menu_controls_process();
+  if (touch_controls_enabled) touch_menu_controls_process();
 }

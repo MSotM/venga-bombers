@@ -12,8 +12,6 @@ void init_render() {
 #ifdef RENDER_SEVEN_SEGMENT
   init_seven_segment();
 #endif
-
-  render(true);
 }
 
 static void render_to_displays(uint8_t x, uint8_t y) {
@@ -27,13 +25,31 @@ static void render_to_displays(uint8_t x, uint8_t y) {
 }
 
 static void render_player_to_displays(player_t *player) {
-  #ifdef RENDER_LCD
-    render_player_to_lcd(player, false);
-  #endif
+#ifdef RENDER_LCD
+  render_player_to_lcd(player, false);
+#endif
 
-  #ifdef RENDER_SEVEN_SEGMENT
-    render_player_to_seven_segment(player);
-  #endif
+#ifdef RENDER_SEVEN_SEGMENT
+  render_player_to_seven_segment(player);
+#endif
+}
+
+void render_player_info(bool force) {
+  /* Render player updates */
+  uint8_t i;
+  player_t *player;
+  for(i = 0; i < PLAYER_COUNT; i++) {
+    player = get_player(i + 1);
+
+    /* If player is updated or an update is forced, render the player */
+    if(force) {
+      player->flags = PLAYER_FLAG_SCORE_UPDATED | PLAYER_FLAG_HEALTH_UPDATED;
+    }
+    if(player->flags) {
+      render_player_to_displays(player);
+      reset_player_flags(player);
+    }
+  }
 }
 
 void render(bool force) {
@@ -54,19 +70,5 @@ void render(bool force) {
     }
   }
 
-  /* Render player updates */
-  uint8_t i;
-  player_t *player;
-  for(i = 0; i < PLAYER_COUNT; i++) {
-    player = get_player(i + 1);
-
-    /* If player is updated or an update is forced, render the player */
-    if(force) {
-      player->flags = PLAYER_FLAG_SCORE_UPDATED | PLAYER_FLAG_HEALTH_UPDATED;
-    }
-    if(player->flags) {
-      render_player_to_displays(player);
-      reset_player_flags(player);
-    }
-  }
+  render_player_info(force);
 }

@@ -120,6 +120,8 @@ extern const texture_t TEXTURE_UPGRADE_BOMBS;
 extern const texture_t TEXTURE_UPGRADE_SPEED;
 extern const texture_t TEXTURE_ERROR;
 extern const texture_t TEXTURE_UI;
+extern const texture_t TEXTURE_PLAY_BUTTON;
+extern const texture_t TEXTURE_MENU_TITLE;
 
 extern const texture_t TEXTURE_CHARACTER_0;
 extern const texture_t TEXTURE_CHARACTER_1;

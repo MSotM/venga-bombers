@@ -290,6 +290,26 @@ void free_event(event_t *event);
  */
 void handle_events();
 
+/* State machine ----------------------------------------------------------- */
+typedef enum {
+  GAME_STATE_MENU,
+  GAME_STATE_PLAYING,
+  GAME_STATE_END,
+  GAME_STATE_HIGHSCORES,
+  NUM_GAME_STATES,
+  NO_STATE_ENTERED
+} game_state_t;
+
+/*
+ * Exit the current state and enter a new state.
+ */
+void switch_state(game_state_t new_game_state);
+
+/*
+ * Execute the current state.
+ */
+void execute_current_state();
+
 /* Rendering --------------------------------------------------------------- */
 
 /*
@@ -309,6 +329,8 @@ void init_lcd_display();
 void update_lcd_brightness();
 void render_to_lcd(uint8_t x, uint8_t y);
 void render_player_to_lcd(player_t *player, bool force);
+void render_menu_background_to_lcd();
+void render_menu_to_lcd();
 
 /*
  * 7 segment rendering functions used in render.c
@@ -332,7 +354,8 @@ void init_controls();
 /*
  * Process input for all enabled input methods.
  */
-void process_controls();
+void process_menu_controls();
+void process_game_controls();
 
 /* Levels ------------------------------------------------------------------ */
 
