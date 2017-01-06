@@ -1,5 +1,4 @@
 #include <pleasant-lcd.h>
-#include <pleasant-usart.h>
 #include "game.h"
 
 /* STATEMACHINE ------------------------------------------------------------ */
@@ -51,8 +50,10 @@ void execute_current_state() {
 /* MENU -------------------------------------------------------------------- */
 
 void enter_menu() {
+#ifdef RENDER_LCD
   render_menu_background_to_lcd();
   render_menu_to_lcd();
+#endif
 }
 
 void execute_menu() {
@@ -67,8 +68,10 @@ void exit_menu() {
 
 void enter_playing() {
   init_world();
+#ifdef RENDER_LCD
   render_player_to_lcd(get_player(1), true);
   render_player_to_lcd(get_player(2), true);
+#endif
   render(true); /* Initial field render */
 }
 
