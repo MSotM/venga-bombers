@@ -353,6 +353,7 @@ void render_player_to_seven_segment(player_t *player);
  */
 void init_terminal_display();
 void render_to_terminal(uint8_t x, uint8_t y);
+void render_to_seven_segment(uint8_t number);
 
 /* Controls ---------------------------------------------------------------- */
 

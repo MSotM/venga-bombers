@@ -54,6 +54,7 @@ void enter_menu() {
   render_menu_background_to_lcd();
   render_menu_to_lcd();
 #endif
+  render_to_seven_segment(local_id);
 }
 
 void execute_menu() {

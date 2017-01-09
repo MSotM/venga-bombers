@@ -4,8 +4,8 @@
 #include "game.h"
 #include "audio.h"
 
-uint8_t remote_id = 1;
-uint8_t local_id = 2;
+uint8_t local_id = 1;
+uint8_t remote_id = 2;
 
 int main() {
   pre_init_music();
@@ -40,8 +40,8 @@ int main() {
 
   /* Read dip switch to check if we're player one */
   if (PINC & _BV(PINC2)){
-    local_id = 1;
-    remote_id = 2;
+    local_id = 2;
+    remote_id = 1;
   }
 
   TIMER2_COMPARE_A = 49;

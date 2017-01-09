@@ -30,7 +30,9 @@ static void render_player_to_displays(player_t *player) {
 #endif
 
 #ifdef RENDER_SEVEN_SEGMENT
-  render_player_to_seven_segment(player);
+  if (get_player_flag(player, PLAYER_FLAG_HEALTH_UPDATED) && player->player_id == local_id) {
+    render_to_seven_segment(player->lives);
+  }
 #endif
 }
 
