@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "game.h"
 #include "texture.h"
+#include "touch-buttons.h"
 
 #define LCD_SQUARE_SIZE                16
 
@@ -234,16 +235,6 @@ void render_menu_background_to_lcd() {
       }
     }
   }
-
-  texture_render(TEXTURE_PLAYER_1_DOWN,
-                 2 * LCD_SQUARE_SIZE,
-                 2 * LCD_SQUARE_SIZE,
-                 2);
-
-  texture_render(TEXTURE_PLAYER_2_DOWN,
-                 (width - 4) * LCD_SQUARE_SIZE,
-                 2 * LCD_SQUARE_SIZE,
-                 2);
 }
 
 void render_menu_to_lcd() {
@@ -256,12 +247,88 @@ void render_menu_to_lcd() {
                  1);
 
   /* Play button space */
-  uint16_t play_button_width = 80, play_button_height = 30;
-  uint16_t play_button_pos_x = (LCD_WIDTH / 2) - (play_button_width / 2);
-  uint16_t play_button_pos_y = (LCD_HEIGHT / 2) - (play_button_height / 2);
   texture_render(TEXTURE_PLAY_BUTTON,
-                 play_button_pos_x,
-                 play_button_pos_y,
+                 MENU_BUTTON_PLAY_X,
+                 MENU_BUTTON_PLAY_Y,
+                 1);
+
+  texture_render(TEXTURE_PLAYER_1_DOWN,
+                 2 * LCD_SQUARE_SIZE,
+                 2 * LCD_SQUARE_SIZE,
+                 2);
+
+  texture_render(TEXTURE_PLAYER_2_DOWN,
+                 ((LCD_WIDTH / LCD_SQUARE_SIZE) - 4) * LCD_SQUARE_SIZE,
+                 2 * LCD_SQUARE_SIZE,
+                 2);
+}
+
+void render_end_screen_to_lcd(game_result_t result) {
+  bool draw_player1 = false;
+  bool draw_player2 = false;
+  if (result == GAME_RESULT_PLAYER1_WIN) {
+    texture_render(TEXTURE_RESULT_PLAYER1_WIN,
+                   5 * LCD_SQUARE_SIZE,
+                   2 * LCD_SQUARE_SIZE,
+                   1);
+
+    draw_player1 = true;
+  } else if (result == GAME_RESULT_PLAYER2_WIN) {
+    texture_render(TEXTURE_RESULT_PLAYER2_WIN,
+                   5 * LCD_SQUARE_SIZE,
+                   2 * LCD_SQUARE_SIZE,
+                   1);
+
+    draw_player2 = true;
+  } else if (result == GAME_RESULT_DRAW){
+    texture_render(TEXTURE_RESULT_DRAW,
+                   5 * LCD_SQUARE_SIZE,
+                   2 * LCD_SQUARE_SIZE,
+                   1);
+
+    draw_player1 = true;
+    draw_player2 = true;
+  }
+
+  if (draw_player1) {
+    texture_render(TEXTURE_PLAYER_1_DOWN,
+                   2 * LCD_SQUARE_SIZE,
+                   2 * LCD_SQUARE_SIZE,
+                   2);
+
+    player_t *player1 = get_player(1);
+    uint8_t x_offset = (player1->score < 10000) ? 2 : 1;
+    lcd_render_integer(player1->score,
+                       x_offset * LCD_SQUARE_SIZE,
+                       4 * LCD_SQUARE_SIZE,
+                       RGB(255, 255, 255),
+                       RGB(0, 0, 0), 2);
+  }
+
+  if (draw_player2) {
+    texture_render(TEXTURE_PLAYER_2_DOWN,
+                   ((LCD_WIDTH / LCD_SQUARE_SIZE) - 4) * LCD_SQUARE_SIZE,
+                   2 * LCD_SQUARE_SIZE,
+                   2);
+
+    player_t *player2 = get_player(2);
+    uint8_t world_width = LCD_WIDTH / LCD_SQUARE_SIZE;
+    uint8_t x_offset = (player2->score < 10000) ? 4 : 5;
+    lcd_render_integer(player2->score,
+                       (world_width - x_offset) * LCD_SQUARE_SIZE,
+                       4 * LCD_SQUARE_SIZE,
+                       RGB(255, 255, 255),
+                       RGB(0, 0, 0), 2);
+  }
+
+  texture_render(TEXTURE_MENU_BUTTON,
+                 END_BUTTON_BACK_TO_MENU_X,
+                 END_BUTTON_BACK_TO_MENU_Y,
+                 1);
+
+  texture_render(TEXTURE_PLAY_BUTTON,
+                 END_BUTTON_PLAY_AGAIN_X,
+                 END_BUTTON_PLAY_AGAIN_Y,
                  1);
 }
 

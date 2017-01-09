@@ -66,6 +66,12 @@ void exit_menu() {
 
 /* PLAYING ----------------------------------------------------------------- */
 
+bool check_if_game_over() {
+  player_t *player1 = get_player(1);
+  player_t *player2 = get_player(2);
+  return !player1->lives || !player2->lives;
+}
+
 void enter_playing() {
   init_world();
 #ifdef RENDER_LCD
@@ -79,6 +85,9 @@ void execute_playing() {
   update_world();
   render(false);
   process_game_controls();
+  if (check_if_game_over()) {
+    switch_state(GAME_STATE_END);
+  }
 }
 
 void exit_playing() {
@@ -87,12 +96,27 @@ void exit_playing() {
 
 /* END --------------------------------------------------------------------- */
 
-void enter_end() {
+game_result_t get_game_result() {
+  player_t *player1 = get_player(1);
+  player_t *player2 = get_player(2);
+  if (!player1->lives && !player2->lives) {
+    return GAME_RESULT_DRAW;
+  } else if (!player1->lives) {
+    return GAME_RESULT_PLAYER2_WIN;
+  } else {
+    return GAME_RESULT_PLAYER1_WIN;
+  }
+}
 
+void enter_end() {
+#ifdef RENDER_LCD
+  render_menu_background_to_lcd();
+  render_end_screen_to_lcd(get_game_result());
+#endif
 }
 
 void execute_end() {
-
+  process_end_controls();
 }
 
 void exit_end() {

@@ -300,6 +300,15 @@ typedef enum {
   NO_STATE_ENTERED
 } game_state_t;
 
+typedef enum {
+  GAME_RESULT_PLAYER1_WIN,
+  GAME_RESULT_PLAYER2_WIN,
+  GAME_RESULT_DRAW
+} game_result_t;
+
+bool check_if_game_over();
+game_result_t get_game_result();
+
 /*
  * Exit the current state and enter a new state.
  */
@@ -331,6 +340,7 @@ void render_to_lcd(uint8_t x, uint8_t y);
 void render_player_to_lcd(player_t *player, bool force);
 void render_menu_background_to_lcd();
 void render_menu_to_lcd();
+void render_end_screen_to_lcd(game_result_t result);
 
 /*
  * 7 segment rendering functions used in render.c
@@ -356,6 +366,7 @@ void init_controls();
  */
 void process_menu_controls();
 void process_game_controls();
+void process_end_controls();
 
 /* Levels ------------------------------------------------------------------ */
 
