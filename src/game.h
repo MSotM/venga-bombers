@@ -417,4 +417,12 @@ void reset_all_player_flags();
 void init_brightness_control();
 uint8_t brightness_control_brightness();
 
+/* Highscores -------------------------------------------------------------- */
+
+#define HIGHSCORE_COUNT 5
+typedef uint16_t highscores_t[HIGHSCORE_COUNT];
+
+bool highscores_read(highscores_t highscores);
+bool highscores_add(uint16_t score);
+
 #endif /* GAME_H */
