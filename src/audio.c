@@ -90,7 +90,7 @@ static void get_note_values(uint16_t *t, uint16_t *r, uint8_t note) {
 void conduct() {
   if (processed_note) {
     uint16_t tone, rhythm;
-    get_note_values(&tone, &rhythm, boom_song[note_index]);
+    get_note_values(&tone, &rhythm, pgm_read_byte(boom_song + note_index));
     play(tone);
     set_timeout(&processed_note, rhythm);
     processed_note = false;

@@ -2,6 +2,7 @@
 #define AUDIO_H
 
 #include <stdint.h>
+#include <avr/pgmspace.h>
 
 #define BOOM_SONG_SIZE 239
 #define NOTE(t, r) ((t << 3) | r)
