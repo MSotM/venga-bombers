@@ -54,8 +54,8 @@ static void terminal_end_controls_process() {
   while (usart_byte_available()) {
     input = usart_read(&error);
     switch (input) {
-      case ' ': switch_state(GAME_STATE_PLAYING); break;
-      case 'm': switch_state(GAME_STATE_MENU); break;
+    case ' ': switch_state(GAME_STATE_PLAYING); break;
+    case 'm': switch_state(GAME_STATE_MENU); break;
     }
   }
 }
