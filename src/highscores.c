@@ -35,22 +35,21 @@ static void highscores_write(highscores_t highscores) {
 static void highscores_insert_sorted(highscores_t highscores, uint16_t score) {
   uint16_t i;
   uint16_t next_score = 0;
-  uint16_t next_score_temp = 0;
 
   for (i = 0; i < HIGHSCORE_COUNT; i++) {
-    if (next_score != 0) {
-      next_score_temp = highscores[i];
-      highscores[i] = next_score;
-      next_score = next_score_temp;
-    } else if (highscores[i] < score) {
+    if (highscores[i] < score) {
       next_score = highscores[i];
       highscores[i] = score;
+      score = next_score;
     }
   }
 }
 
 bool highscores_add(uint16_t score) {
   highscores_t highscores = {0};
+
+  if (score == 0) return false;
+
   highscores_read(highscores);
   if (highscores[HIGHSCORE_COUNT - 1] != 0
       || highscores[HIGHSCORE_COUNT - 1] > score) {

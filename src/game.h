@@ -341,6 +341,7 @@ void render_player_to_lcd(player_t *player, bool force);
 void render_menu_background_to_lcd();
 void render_menu_to_lcd();
 void render_end_screen_to_lcd(game_result_t result);
+void render_highscores_to_lcd();
 
 /*
  * 7 segment rendering functions used in render.c
@@ -368,6 +369,7 @@ void init_controls();
 void process_menu_controls();
 void process_game_controls();
 void process_end_controls();
+void process_highscore_controls();
 
 /* Levels ------------------------------------------------------------------ */
 

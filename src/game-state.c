@@ -86,7 +86,11 @@ void execute_playing() {
   update_world();
   render(false);
   process_game_controls();
+
   if (check_if_game_over()) {
+    highscores_add(get_player(1)->score);
+    highscores_add(get_player(2)->score);
+
     switch_state(GAME_STATE_END);
   }
 }
@@ -127,11 +131,14 @@ void exit_end() {
 /* HIGHSCORES -------------------------------------------------------------- */
 
 void enter_highscores() {
-
+#ifdef RENDER_LCD
+  render_menu_background_to_lcd();
+  render_highscores_to_lcd();
+#endif
 }
 
 void execute_highscores() {
-
+  process_highscore_controls();
 }
 
 void exit_highscores() {

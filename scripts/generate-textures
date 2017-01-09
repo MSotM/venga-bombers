@@ -30,6 +30,7 @@ exec ros -Q -- $0 "$@"
     ("TEXTURE_ERROR"              . "textures/error.png")
     ("TEXTURE_UI"                 . "textures/ui.png")
     ("TEXTURE_PLAY_BUTTON"        . "textures/play-button.png")
+    ("TEXTURE_HIGHSCORES_BUTTON"  . "textures/highscores-button.png")
     ("TEXTURE_MENU_TITLE"         . "textures/menu-title.png")
     ("TEXTURE_MENU_BUTTON"        . "textures/menu-button.png")
     ("TEXTURE_RESULT_PLAYER1_WIN" . "textures/result-player1-win.png")
