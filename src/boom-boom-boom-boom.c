@@ -1,6 +1,6 @@
 #include "audio.h"
 
-const note_t boom_song[] = {
+const PROGMEM note_t boom_song[] = {
 
   /* INTRO I */
   /* I A */
