@@ -48,6 +48,18 @@ static void terminal_menu_controls_process() {
   }
 }
 
+static void terminal_end_controls_process() {
+  enum usart_error error;
+  uint8_t input;
+  while (usart_byte_available()) {
+    input = usart_read(&error);
+    switch (input) {
+      case ' ': switch_state(GAME_STATE_PLAYING); break;
+      case 'm': switch_state(GAME_STATE_MENU); break;
+    }
+  }
+}
+
 /* Nunchuck controls ------------------------------------------------------- */
 
 #define NUNCHUCK_ADDRESS 0x52
@@ -130,18 +142,49 @@ static bool nunchuck_game_controls_process() {
 }
 
 /* Touch controls ---------------------------------------------------------- */
+
+bool is_button_pressed(uint16_t touch_x,
+                       uint16_t touch_y,
+                       touch_button_t button) {
+  return touch_x >= button.x && touch_x <= button.x + button.width &&
+         touch_y >= button.y && touch_y <= button.y + button.height;
+}
+
 touch_button_t menu_buttons[NUM_MENU_BUTTONS];
 
-touch_button_t menu_button_play = {.x      = 120,
-                                   .y      = 105,
-                                   .width  = 80,
-                                   .height = 30,
-                                   .index  = MENU_BUTTON_PLAY};
+touch_button_t menu_button_play = {
+  .x      = MENU_BUTTON_PLAY_X,
+  .y      = MENU_BUTTON_PLAY_Y,
+  .width  = DEFAULT_BUTTON_WIDTH,
+  .height = DEFAULT_BUTTON_HEIGHT,
+  .index  = MENU_BUTTON_PLAY
+};
+
+touch_button_t end_buttons[NUM_END_BUTTONS];
+
+touch_button_t end_button_back = {
+  .x      = END_BUTTON_BACK_TO_MENU_X,
+  .y      = END_BUTTON_BACK_TO_MENU_Y,
+  .width  = DEFAULT_BUTTON_WIDTH,
+  .height = DEFAULT_BUTTON_HEIGHT,
+  .index  = END_BUTTON_BACK_TO_MENU
+};
+
+touch_button_t end_button_play = {
+  .x      = END_BUTTON_PLAY_AGAIN_X,
+  .y      = END_BUTTON_PLAY_AGAIN_Y,
+  .width  = DEFAULT_BUTTON_WIDTH,
+  .height = DEFAULT_BUTTON_HEIGHT,
+  .index  = END_BUTTON_PLAY_AGAIN
+};
 
 static bool touch_controls_init() {
   lcd_touch_start_calibration();
 
   menu_buttons[MENU_BUTTON_PLAY] = menu_button_play;
+
+  end_buttons[END_BUTTON_BACK_TO_MENU] = end_button_back;
+  end_buttons[END_BUTTON_PLAY_AGAIN] = end_button_play;
 
   return true;
 }
@@ -150,7 +193,8 @@ static uint8_t touch_controls_read(uint16_t touch_x,
                                    uint16_t touch_y,
                                    touch_button_t *buttons,
                                    uint8_t num_buttons) {
-  for (uint8_t button_index = 0;
+  uint8_t button_index;
+  for (button_index = 0;
        button_index < num_buttons;
        button_index++) {
     if (is_button_pressed(touch_x, touch_y, buttons[button_index])) {
@@ -161,24 +205,41 @@ static uint8_t touch_controls_read(uint16_t touch_x,
   return NO_BUTTON_PRESSED;
 }
 
-static touch_menu_button_t touch_menu_controls_read(uint16_t touch_x,
-                                                    uint16_t touch_y) {
-  return (touch_menu_button_t) touch_controls_read(touch_x,
-                                                   touch_y,
-                                                   menu_buttons,
-                                                   NUM_MENU_BUTTONS);
-}
-
 static void touch_menu_controls_process() {
   uint16_t x, y;
 
   if (lcd_touch_read(NULL, &x, &y)) {
-    touch_menu_button_t button = touch_menu_controls_read(x, y);
+    touch_menu_button_t button =
+      (touch_menu_button_t) touch_controls_read(x,
+                                                y,
+                                                menu_buttons,
+                                                NUM_MENU_BUTTONS);
 
     switch (button) {
     case MENU_BUTTON_PLAY: switch_state(GAME_STATE_PLAYING); break;
 
     case NUM_MENU_BUTTONS:
+    default:
+      break;
+    }
+  }
+}
+
+static void touch_end_controls_process() {
+  uint16_t x, y;
+
+  if (lcd_touch_read(NULL, &x, &y)) {
+    touch_end_button_t button =
+      (touch_end_button_t) touch_controls_read(x,
+                                               y,
+                                               end_buttons,
+                                               NUM_END_BUTTONS);
+
+    switch (button) {
+    case END_BUTTON_BACK_TO_MENU: switch_state(GAME_STATE_MENU); break;
+    case END_BUTTON_PLAY_AGAIN: switch_state(GAME_STATE_PLAYING); break;
+
+    case NUM_END_BUTTONS:
     default:
       break;
     }
@@ -213,4 +274,9 @@ void process_game_controls() {
 void process_menu_controls() {
   if (terminal_controls_enabled) terminal_menu_controls_process();
   if (touch_controls_enabled) touch_menu_controls_process();
+}
+
+void process_end_controls() {
+  if (terminal_controls_enabled) terminal_end_controls_process();
+  if (touch_controls_enabled) touch_end_controls_process();
 }

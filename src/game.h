@@ -90,6 +90,8 @@ void update_world();
  */
 tile_t *world_tile(uint8_t x, uint8_t y);
 
+void free_world();
+
 /* Player ---------------------------------------------------------------------
  * Players are user (or AI?)-controlled entities that move around the world,
  * place bombs, pick up upgrades, and are damaged by explosions.
@@ -159,6 +161,8 @@ void update_players();
  */
 bool player_move(player_t *player, int8_t dx, int8_t dy);
 
+void free_players();
+
 /* Bomb -----------------------------------------------------------------------
  * Players can place bombs on tiles. Doing so sets the tile_contains_bomb bit,
  * but more information needs to be stored for each bomb. An array is
@@ -207,6 +211,8 @@ bomb_t *place_bomb(player_t *player);
  */
 void trigger_bomb(bomb_t *bomb);
 
+void clear_bombs();
+
 /* Explosion ------------------------------------------------------------------
  * When a bomb explodes, it spawns a number of explosions. This sets the
  * tile_contains_explosion bit, but more information needs to be stored for
@@ -241,6 +247,8 @@ void update_explosions();
  * Place an explosion at the specified position in the world.
  */
 void activate_explosion(uint8_t x, uint8_t y);
+
+void clear_explosions();
 
 /* Events ------------------------------------------------------------------ */
 
@@ -300,6 +308,15 @@ typedef enum {
   NO_STATE_ENTERED
 } game_state_t;
 
+typedef enum {
+  GAME_RESULT_PLAYER1_WIN,
+  GAME_RESULT_PLAYER2_WIN,
+  GAME_RESULT_DRAW
+} game_result_t;
+
+bool check_if_game_over();
+game_result_t get_game_result();
+
 /*
  * Exit the current state and enter a new state.
  */
@@ -331,6 +348,7 @@ void render_to_lcd(uint8_t x, uint8_t y);
 void render_player_to_lcd(player_t *player, bool force);
 void render_menu_background_to_lcd();
 void render_menu_to_lcd();
+void render_end_screen_to_lcd(game_result_t result);
 
 /*
  * 7 segment rendering functions used in render.c
@@ -356,6 +374,7 @@ void init_controls();
  */
 void process_menu_controls();
 void process_game_controls();
+void process_end_controls();
 
 /* Levels ------------------------------------------------------------------ */
 
