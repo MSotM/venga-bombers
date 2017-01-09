@@ -37,26 +37,34 @@ static void terminal_game_controls_process() {
   }
 }
 
-static void terminal_menu_controls_process() {
+static uint8_t read_terminal_input() {
   enum usart_error error;
-  uint8_t input;
-  while (usart_byte_available()) {
+  uint8_t input = '\0';
+  if (usart_byte_available()) {
     input = usart_read(&error);
-    switch (input) {
-    case ' ': switch_state(GAME_STATE_PLAYING); break;
-    }
+  }
+  return input;
+}
+
+static void terminal_menu_controls_process() {
+  switch (read_terminal_input()) {
+  case ' ': switch_state(GAME_STATE_PLAYING); break;
+  case 'h': switch_state(GAME_STATE_HIGHSCORES); break;
   }
 }
 
 static void terminal_end_controls_process() {
-  enum usart_error error;
-  uint8_t input;
-  while (usart_byte_available()) {
-    input = usart_read(&error);
-    switch (input) {
-    case ' ': switch_state(GAME_STATE_PLAYING); break;
-    case 'm': switch_state(GAME_STATE_MENU); break;
-    }
+  switch (read_terminal_input()) {
+  case ' ': switch_state(GAME_STATE_PLAYING); break;
+  case 'm': switch_state(GAME_STATE_MENU); break;
+  }
+}
+
+static void terminal_highscores_controls_process() {
+  switch (read_terminal_input()) {
+  case ' ': switch_state(GAME_STATE_PLAYING); break;
+  case 'm': switch_state(GAME_STATE_MENU); break;
+  case 'h': switch_state(GAME_STATE_HIGHSCORES); break;
   }
 }
 
@@ -178,10 +186,17 @@ touch_button_t end_button_play = {
   .index  = END_BUTTON_PLAY_AGAIN
 };
 
+touch_button_t menu_button_highscores = {.x      = 120,
+                                         .y      = 136,
+                                         .width  = 80,
+                                         .height = 30,
+                                         .index  = MENU_BUTTON_HIGHSCORES};
+
 static bool touch_controls_init() {
   lcd_touch_start_calibration();
 
   menu_buttons[MENU_BUTTON_PLAY] = menu_button_play;
+  menu_buttons[MENU_BUTTON_HIGHSCORES] = menu_button_highscores;
 
   end_buttons[END_BUTTON_BACK_TO_MENU] = end_button_back;
   end_buttons[END_BUTTON_PLAY_AGAIN] = end_button_play;
@@ -217,7 +232,7 @@ static void touch_menu_controls_process() {
 
     switch (button) {
     case MENU_BUTTON_PLAY: switch_state(GAME_STATE_PLAYING); break;
-
+    case MENU_BUTTON_HIGHSCORES: switch_state(GAME_STATE_HIGHSCORES); break;
     case NUM_MENU_BUTTONS:
     default:
       break;
@@ -243,6 +258,12 @@ static void touch_end_controls_process() {
     default:
       break;
     }
+  }
+}
+
+static void touch_highscores_controls_process() {
+  if (lcd_touch_read(NULL, NULL, NULL)) {
+    switch_state(GAME_STATE_MENU);
   }
 }
 
@@ -279,4 +300,9 @@ void process_menu_controls() {
 void process_end_controls() {
   if (terminal_controls_enabled) terminal_end_controls_process();
   if (touch_controls_enabled) touch_end_controls_process();
+}
+
+void process_highscore_controls() {
+  if (terminal_controls_enabled) terminal_highscores_controls_process();
+  if (touch_controls_enabled) touch_highscores_controls_process();
 }

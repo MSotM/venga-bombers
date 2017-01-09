@@ -211,6 +211,14 @@ void render_to_lcd(uint8_t x, uint8_t y) {
   }
 }
 
+/* Brightness -------------------------------------------------------------- */
+
+void update_lcd_brightness() {
+  lcd_set_brightness(brightness_control_brightness());
+}
+
+/* Menu -------------------------------------------------------------------- */
+
 void render_menu_background_to_lcd() {
   uint8_t width = LCD_WIDTH / LCD_SQUARE_SIZE;
   uint8_t height = LCD_HEIGHT / LCD_SQUARE_SIZE;
@@ -246,10 +254,14 @@ void render_menu_to_lcd() {
                  title_pos_y,
                  1);
 
-  /* Play button space */
   texture_render(TEXTURE_PLAY_BUTTON,
                  MENU_BUTTON_PLAY_X,
                  MENU_BUTTON_PLAY_Y,
+                 1);
+
+  texture_render(TEXTURE_HIGHSCORES_BUTTON,
+                 MENU_BUTTON_HIGHSCORES_X,
+                 MENU_BUTTON_HIGHSCORES_Y,
                  1);
 
   texture_render(TEXTURE_PLAYER_1_DOWN,
@@ -332,6 +344,29 @@ void render_end_screen_to_lcd(game_result_t result) {
                  1);
 }
 
-void update_lcd_brightness() {
-  lcd_set_brightness(brightness_control_brightness());
+/* Highscores -------------------------------------------------------------- */
+
+#define LCD_HIGHSCORE_COLOR RGB(255, 255, 255)
+#define LCD_HIGHSCORE_BACKGROUND_COLOR RGB(0, 0, 0)
+
+#define LCD_HIGHSCORE_X 150
+#define LCD_HIGHSCORE_Y 90
+
+void render_highscores_background_to_lcd() {
+  render_menu_background_to_lcd();
+}
+
+void render_highscores_to_lcd() {
+  uint8_t i;
+  highscores_t highscores = {0};
+  highscores_read(highscores);
+
+  for (i = 0; i < HIGHSCORE_COUNT; i++) {
+    lcd_render_integer(highscores[i],
+                       LCD_HIGHSCORE_X,
+                       LCD_HIGHSCORE_Y + 15 * i,
+                       LCD_HIGHSCORE_COLOR,
+                       LCD_HIGHSCORE_BACKGROUND_COLOR,
+                       1);
+  }
 }

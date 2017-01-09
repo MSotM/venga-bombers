@@ -341,6 +341,7 @@ void render_player_to_lcd(player_t *player, bool force);
 void render_menu_background_to_lcd();
 void render_menu_to_lcd();
 void render_end_screen_to_lcd(game_result_t result);
+void render_highscores_to_lcd();
 
 /*
  * 7 segment rendering functions used in render.c
@@ -368,6 +369,7 @@ void init_controls();
 void process_menu_controls();
 void process_game_controls();
 void process_end_controls();
+void process_highscore_controls();
 
 /* Levels ------------------------------------------------------------------ */
 
@@ -416,5 +418,13 @@ void reset_all_player_flags();
 
 void init_brightness_control();
 uint8_t brightness_control_brightness();
+
+/* Highscores -------------------------------------------------------------- */
+
+#define HIGHSCORE_COUNT 5
+typedef uint16_t highscores_t[HIGHSCORE_COUNT];
+
+bool highscores_read(highscores_t highscores);
+bool highscores_add(uint16_t score);
 
 #endif /* GAME_H */

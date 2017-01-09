@@ -20,11 +20,15 @@ bool is_button_pressed(uint16_t touch_x,
 
 typedef enum {
   MENU_BUTTON_PLAY,
+  MENU_BUTTON_HIGHSCORES,
   NUM_MENU_BUTTONS
 } touch_menu_button_t;
 
 #define MENU_BUTTON_PLAY_X 120
 #define MENU_BUTTON_PLAY_Y 105
+
+#define MENU_BUTTON_HIGHSCORES_X 120
+#define MENU_BUTTON_HIGHSCORES_Y 136
 
 /* END --------------------------------------------------------------------- */
 
