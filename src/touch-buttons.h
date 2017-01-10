@@ -28,7 +28,7 @@ typedef enum {
 #define MENU_BUTTON_PLAY_Y 105
 
 #define MENU_BUTTON_HIGHSCORES_X 120
-#define MENU_BUTTON_HIGHSCORES_Y 136
+#define MENU_BUTTON_HIGHSCORES_Y 145
 
 /* END --------------------------------------------------------------------- */
 

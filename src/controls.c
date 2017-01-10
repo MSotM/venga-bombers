@@ -168,6 +168,14 @@ touch_button_t menu_button_play = {
   .index  = MENU_BUTTON_PLAY
 };
 
+touch_button_t menu_button_highscores = {
+  .x      = MENU_BUTTON_HIGHSCORES_X,
+  .y      = MENU_BUTTON_HIGHSCORES_Y,
+  .width  = DEFAULT_BUTTON_WIDTH,
+  .height = DEFAULT_BUTTON_HEIGHT,
+  .index  = MENU_BUTTON_HIGHSCORES
+};
+
 touch_button_t end_buttons[NUM_END_BUTTONS];
 
 touch_button_t end_button_back = {
@@ -185,12 +193,6 @@ touch_button_t end_button_play = {
   .height = DEFAULT_BUTTON_HEIGHT,
   .index  = END_BUTTON_PLAY_AGAIN
 };
-
-touch_button_t menu_button_highscores = {.x      = 120,
-                                         .y      = 136,
-                                         .width  = 80,
-                                         .height = 30,
-                                         .index  = MENU_BUTTON_HIGHSCORES};
 
 static bool touch_controls_init() {
   lcd_touch_start_calibration();

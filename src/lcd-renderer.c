@@ -349,8 +349,8 @@ void render_end_screen_to_lcd(game_result_t result) {
 #define LCD_HIGHSCORE_COLOR RGB(255, 255, 255)
 #define LCD_HIGHSCORE_BACKGROUND_COLOR RGB(0, 0, 0)
 
-#define LCD_HIGHSCORE_X 150
-#define LCD_HIGHSCORE_Y 90
+#define LCD_HIGHSCORE_X 140
+#define LCD_HIGHSCORE_Y 60
 
 void render_highscores_background_to_lcd() {
   render_menu_background_to_lcd();
@@ -364,9 +364,9 @@ void render_highscores_to_lcd() {
   for (i = 0; i < HIGHSCORE_COUNT; i++) {
     lcd_render_integer(highscores[i],
                        LCD_HIGHSCORE_X,
-                       LCD_HIGHSCORE_Y + 15 * i,
+                       LCD_HIGHSCORE_Y + 30 * i,
                        LCD_HIGHSCORE_COLOR,
                        LCD_HIGHSCORE_BACKGROUND_COLOR,
-                       1);
+                       2);
   }
 }
