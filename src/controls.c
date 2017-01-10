@@ -23,16 +23,16 @@ static void terminal_game_controls_process() {
     input = usart_read(&error);
     /* TODO handle usart error */
     switch (input) {
-    case 'w': queue_event(EVENT_TYPE_MOVE_UP, 1); break;
-    case 'a': queue_event(EVENT_TYPE_MOVE_LEFT, 1); break;
-    case 's': queue_event(EVENT_TYPE_MOVE_DOWN, 1); break;
-    case 'd': queue_event(EVENT_TYPE_MOVE_RIGHT, 1); break;
-    case 'i': queue_event(EVENT_TYPE_MOVE_UP, 2); break;
-    case 'j': queue_event(EVENT_TYPE_MOVE_LEFT, 2); break;
-    case 'k': queue_event(EVENT_TYPE_MOVE_DOWN, 2); break;
-    case 'l': queue_event(EVENT_TYPE_MOVE_RIGHT, 2); break;
-    case 'q': queue_event(EVENT_TYPE_PLACE_BOMB, 1); break;
-    case 'u': queue_event(EVENT_TYPE_PLACE_BOMB, 2); break;
+    case 'w': queue_event(EVENT_TYPE_MOVE_UP,    local_id); break;
+    case 'a': queue_event(EVENT_TYPE_MOVE_LEFT,  local_id); break;
+    case 's': queue_event(EVENT_TYPE_MOVE_DOWN,  local_id); break;
+    case 'd': queue_event(EVENT_TYPE_MOVE_RIGHT, local_id); break;
+    case 'q': queue_event(EVENT_TYPE_PLACE_BOMB, local_id); break;
+    case 'i': queue_event(EVENT_TYPE_MOVE_UP,    remote_id); break;
+    case 'j': queue_event(EVENT_TYPE_MOVE_LEFT,  remote_id); break;
+    case 'k': queue_event(EVENT_TYPE_MOVE_DOWN,  remote_id); break;
+    case 'l': queue_event(EVENT_TYPE_MOVE_RIGHT, remote_id); break;
+    case 'u': queue_event(EVENT_TYPE_PLACE_BOMB, remote_id); break;
     }
   }
 }
@@ -133,17 +133,17 @@ static bool nunchuck_game_controls_process() {
   nunchuck_button_c = !(data[5] & (1 << 1));
 
   if (nunchuck_position_x < 100) {
-    queue_event(EVENT_TYPE_MOVE_LEFT, 1);
+    queue_event(EVENT_TYPE_MOVE_LEFT, local_id);
   } else if (nunchuck_position_x > 150) {
-    queue_event(EVENT_TYPE_MOVE_RIGHT, 1);
+    queue_event(EVENT_TYPE_MOVE_RIGHT, local_id);
   } else if (nunchuck_position_y > 150) {
-    queue_event(EVENT_TYPE_MOVE_UP, 1);
+    queue_event(EVENT_TYPE_MOVE_UP, local_id);
   } else if (nunchuck_position_y < 100) {
-    queue_event(EVENT_TYPE_MOVE_DOWN, 1);
+    queue_event(EVENT_TYPE_MOVE_DOWN, local_id);
   }
 
   if (nunchuck_button_c) {
-    queue_event(EVENT_TYPE_PLACE_BOMB, 1);
+    queue_event(EVENT_TYPE_PLACE_BOMB, local_id);
   }
 
   return true;
