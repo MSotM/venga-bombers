@@ -1,0 +1,90 @@
+\section{Textures}
+\label{sec:textures}
+
+Almost all rendering to the LCD (see Section~\ref{sec:rendering}) is done in
+the form of \emph{textures}. They are used for every tile, every number, and
+most of the UI\@.
+
+Textures are encoded as arrays of 16-bit \emph{words}, stored in program
+memory. These arrays consist of a 1-word \emph{header} (see
+Section~\ref{sec:texture-header}), a \emph{color table} (see
+Section~\ref{sec:texture-color-table}), and \emph{pixel data} (see
+Section~\ref{sec:texture-pixel-data}).
+
+\subsection{Header}
+\label{sec:texture-header}
+
+The first word of a texture definition is the \emph{header}, which encodes the
+following properties of the texture:
+
+\begin{itemize}
+\item 3 bits indicating the texture size
+
+  \begin{enumerate}
+  \item \texttt{TEXTURE\_SIZE\_TILE} (0) for a texture of 16 by 16 pixels.
+  \item \texttt{TEXTURE\_SIZE\_UI} (1) for a texture of 80 by 120 pixels.
+  \item \texttt{TEXTURE\_SIZE\_CHARACTER} (2) for a texture of 5 by 8 pixels.
+  \item \texttt{TEXTURE\_SIZE\_PLAY\_BUTTON} (3) for a texture of 80 by 30
+    pixels.
+  \item \texttt{TEXTURE\_SIZE\_MENU\_TITLE} (4) for a texture of 160 by 32
+    pixels.
+  \end{enumerate}
+
+\item 4 bits specifying the number of colors the texture uses
+\item 2 bits specifying the \emph{unit size}. See
+  Section~\ref{sec:texture-pixel-data}
+\item 1 bit specifying the \emph{encoding type}. See
+  Section~\ref{sec:texture-pixel-data}
+\end{itemize}
+
+This leaves 6 bits unused.
+
+\subsection{Color table}
+\label{sec:texture-color-table}
+
+Immediately after the \emph{header} starts the \emph{color table}. It is a
+sequence of colors, the length of which depends on the number specified in the
+header. Each color is a 16-bit number, which can directly be sent to the LCD\@.
+
+Color numbers can be specified using the \texttt{RGB} preprocessor macro, which
+converts \texttt{r}, \texttt{g} and \texttt{b} components to the closest 16-bit
+color. This macro is provided by the LCD library.
+
+\subsection{Pixel data}
+\label{sec:texture-pixel-data}
+
+All data after the color table is \emph{pixel data}. It specifies the content
+of the texture's pixels from left to right and from top to bottom. The exact
+meaning of the data depends on the \emph{unit size} and the \emph{encoding
+  type}, both of which are specified in the header (see
+Section~\ref{sec:texture-header}).
+
+The \emph{encoding type} is either \texttt{TEXTURE\_ENCODING\_PLAIN} or
+\texttt{TEXTURE\_ENCODING\_RUN\_LENGTH}. When it is \emph{plain}, each pixel of
+the texture is specified using a single \emph{unit}, which serves as an index
+into the \emph{color table} (See Section~\ref{sec:texture-color-table}). When
+it is \emph{run-length}, the \emph{units} alternate between indicating a
+run-length and indicating a color. The run-length specifies the number of
+pixels that should be filled with the color that follows it.
+
+As an example consider a texture with a total size of 5 pixels, where the first
+three pixels use the first color from the color table and the last two pixels
+use the second color from the color table. We will use two pixels to encode
+each color.
+
+When using \emph{plain} encoding, the relevant part of the pixel data would be
+$00\;00\;00\;01\;01_2$. When using \emph{run-length} encoding, however, it
+would be $11\;00\;10\;01_2$. This already saves two bits, for such a small
+number of pixels.
+
+\subsection{Texture encoder}
+\label{sec:texture-encoder}
+
+Because encoding images into the format specified above is a tedious process, a
+small script is included (\texttt{scripts/generate-textures}) that takes images
+in PNG format from the \texttt{textures} directory and generates the C code to
+save them in a variable. The output of this script is available in the file
+\texttt{src/textures.c}.
+
+The script is not optimal---because it always generates textures with
+\emph{plain} encoding---but it does make the texture encoding process painless.

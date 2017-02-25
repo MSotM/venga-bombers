@@ -1,0 +1,126 @@
+\section{Libraries}
+\label{sec:libraries}
+
+Instead of depending on the Arduino framework, the game makes use of the
+\emph{Pleasant Uno AVR}\cite{pleasant-uno-avr} libraries. These libraries were
+written in part to support this game, for a number of reasons. First of all,
+the game is written in pure C. Because the Arduino framework is written in C++,
+it would introduce unwanted \emph{C++-isms}. Secondly, the Arduino framework
+and dependent libraries are rather heavy, using much more program memory than
+desired. This is especially true for the default library to control the
+MI0283QT-9 display that is used.
+
+Pleasant Uno AVR offers a few different libraries, the ones of which that are
+used by the game are discussed in the rest of this section.
+
+\subsection{Pleasant Timer}
+\label{sec:libraries/pleasant-timer}
+
+Pleasant Timer offers a few functions and preprocessor aliases to make working
+with the AVR's timers more \emph{pleasant}. Instead of requiring the programmer
+to fiddle with individual bits in registers, it offers the functions
+\texttt{timer0\_init}, \texttt{timer1\_init} and \texttt{timer2\_init} to set
+up any desired configuration.
+
+As an example, the game initializes timer 0 as follows. Without Pleasant Timer
+this would involve several manipulations of the \texttt{TCCR0A},
+\texttt{TCCR0B} and \texttt{TIMSK0} registers.
+
+\begin{lstlisting}[language=C,frame=single]
+  timer0_init(TIMER_WAVE_TYPE_NORMAL,
+              TIMER_DEFAULT_WRAP_TYPE,
+              TIMER_CLOCK_SOURCE_DIV_1024,
+              TIMER_INTERRUPT_COMPARE_B,
+              TIMER_DEFAULT_COMPARE_OUTPUT_MODE,
+              TIMER_COMPARE_OUTPUT_MODE_TOGGLE);
+\end{lstlisting}
+
+\subsection{Pleasant USART}
+\label{sec:libraries/pleasant-usart}
+
+\begin{sloppypar}
+  Pleasant USART provides functionality to control the USART module in the
+  AVR\@. It provides the function \texttt{usart\_init} to set the baud rate,
+  the \emph{asynchronous mode}, the use or non-use of a parity bit, the number
+  of stop bits to use and the bit-size of each character. After initialization
+  the functions \texttt{usart\_write}, \texttt{usart\_read},
+  \texttt{usart\_byte\_available}, \texttt{usart\_write\_bytes},
+  \texttt{usart\_read\_bytes}, \texttt{usart\_write\_string}, and
+  \texttt{usart\_read\_string} can be used to transmit data.
+\end{sloppypar}
+
+As an example, the game initializes the USART module as follows. This results
+in a baud rate of 115200, the use of \emph{double speed asynchronous mode}, no
+parity bit, 1 stop bit and a character size of 8 bits.
+
+\begin{lstlisting}[language=C,frame=single]
+  usart_init(115200,
+             USART_DEFAULT_ASYNCHRONOUS_MODE,
+             USART_DEFAULT_PARITY,
+             USART_DEFAULT_STOP_BIT_COUNT,
+             USART_DEFAULT_CHARACTER_SIZE);
+\end{lstlisting}
+
+\subsection{Pleasant TWI}
+\label{sec:libraries/pleasant-twi}
+
+Pleasant TWI enables communication using the I²C protocol. It is used by the
+game to receive input from a Nunchuck controller (see
+Section~\ref{sec:nunchuck}).
+
+\begin{sloppypar}
+  Pleasant TWI provides the functions \texttt{twi\_init}, \texttt{twi\_write}
+  and \texttt{twi\_read} for master operation, which is the only mode used by
+  the game. Slave operation is also possible using the function
+  \texttt{twi\_set\_address}, after which the callback functions
+  \texttt{twi\_slave\_receive\_callback} and
+  \texttt{twi\_slave\_transmit\_callback} are called when the master requests
+  or sends data. The function \texttt{twi\_transmit\_reply} can be used to
+  respond to requests.
+\end{sloppypar}
+
+\subsection{Pleasant LCD}
+\label{sec:libraries/pleasant-lcd}
+
+Pleasant LCD implements support for interaction with the MI0283QT-9 TFT display
+with touch panel. It uses the \emph{Pleasant SPI} library for communication
+with the display and the touch component, and \emph{Pleasant Timer} to set up
+timer 1 to drive the brightness of the display.
+
+Initialization of the LCD display is done using the function
+\texttt{lcd\_init}, which expects an SPI clock speed to use. One should
+normally use \texttt{LCD\_DEFAULT\_SPI\_CLOCK\_SPEED}, which is equivalent to
+\texttt{SPI\_CLOCK\_SPEED\_DIV\_2}.
+
+The brightness of the display can be set using the function
+\texttt{lcd\_set\_brightness}, which modifies the comparator register of timer
+1. In the game this function is called by \texttt{update\_lcd\_brightness} (see
+Section~\ref{sec:potentiometer}).
+
+\begin{sloppypar}
+  Drawing to the display can be done using the functions
+  \texttt{lcd\_draw\_pixel}, \texttt{lcd\_fill\_screen} and
+  \texttt{lcd\_fill\_rect}. Each one of those functions fills (an area of) the
+  screen with one color. If a larger area should be filled with multiple
+  colors, drawing individual pixels using \texttt{lcd\_draw\_pixel} introduces
+  lots of overhead. For each pixel it has to send commands to the display to
+  select the area of the pixel, just to then send a single color to fill it
+  with.
+\end{sloppypar}
+
+\begin{sloppypar}
+  To more efficiently fill areas of the screen with multiple colors, the
+  functions \texttt{lcd\_batch\_start}, \texttt{lcd\_batch\_draw} and
+  \texttt{lcd\_batch\_stop} are provided. \texttt{lcd\_batch\_start} selects
+  the area of the screen to fill, \texttt{lcd\_batch\_draw} fills individual
+  pixels of the selected area, and \texttt{lcd\_batch\_stop} finishes the
+  drawing operation. Pixels are filled from left to right, top to bottom. Note
+  that which direction is \emph{left} or \emph{top} depends on the orientation
+  of the display, which can be set using the function
+  \texttt{lcd\_set\_orientation}.
+\end{sloppypar}
+
+Reading input from the touch panel is done using the function
+\texttt{lcd\_touch\_read}. To improve the accuracy of the coordinates reported,
+the touch panel needs to be \emph{calibrated}. This can be done using the
+function \texttt{lcd\_touch\_start\_calibration}.

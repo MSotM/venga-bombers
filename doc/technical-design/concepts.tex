@@ -1,0 +1,256 @@
+\section{Concepts}
+\label{sec:concepts}
+
+\subsection{World}
+\label{sec:world}
+
+The game is played on a grid. That grid is contained in the \emph{world}, which
+is an object of type \texttt{world\_t}. It contains a simple array, containing
+a \texttt{tile\_t} (See Section~\ref{sec:tiles}) for every location in the
+grid. This array has a size of $\mathtt{WORLD\_WIDTH \times WORLD\_HEIGHT}$. A
+pointer to each tile in the grid can be retrieved using the function
+\texttt{world\_tile}, which takes \texttt{x} and \texttt{y} coordinates.
+
+Before the start of the game, the world must be allocated and initialized using
+the function \texttt{init\_world}. Then, on every iteration of the game loop,
+the function \texttt{update\_world} will cause all objects in the world to
+update.
+
+\subsection{Tiles}
+\label{sec:tiles}
+
+Tiles are objects of type \texttt{tile\_t}, which is a type alias for
+\texttt{uint8\_t}. The different attributes of the tile are encoded in those 8
+bits. The bits represent the following attributes, also marked in appropriate
+\emph{mask} constants:
+
+\begin{itemize}
+\item Two bits, as marked in \texttt{TILE\_MASK\_TYPE}, specifying the tile's
+  \emph{tile type}. It defines whether the tile can be walked on and whether
+  explosions affect it. It should be one of the following values, of type
+  \texttt{tile\_type\_t}:
+
+  \begin{itemize}
+  \item \texttt{TILE\_TYPE\_EMPTY} for tiles that can be walked on;
+  \item \texttt{TILE\_TYPE\_SOLID} for tiles that are solid, but transition to
+    \texttt{TILE\_TYPE\_EMPTY} when hit by an explosion;
+  \item \texttt{TILE\_TYPE\_STATIC} for tiles that are solid and that are not
+    affected by explosions.
+  \end{itemize}
+
+  The value of these bits can be read using the function \texttt{tile\_type}
+  and modified using the function \texttt{tile\_set\_type}.
+
+\item Two bits, as marked in \texttt{TILE\_MASK\_UPGRADE}, specifying the
+  tile's \emph{upgrade}. It defines what, if any, upgrade is on that tile. It
+  should be one of the following values, of type \texttt{tile\_upgrade\_t}:
+
+  \begin{itemize}
+  \item \texttt{TILE\_UPGRADE\_NONE} for tiles without upgrades;
+  \item \texttt{TILE\_UPGRADE\_RANGE} for tiles containing an upgrade that
+    increases the player's bombs' explosion range;
+  \item \texttt{TILE\_UPGRADE\_BOMBS} for tiles containing an upgrade that
+    increases the amount of bombs the player can place;
+  \item \texttt{TILE\_UPGRADE\_SPEED} for tiles containing an upgrade that
+    increases the player's walking speed.
+  \end{itemize}
+
+  The value of these bits can be read using the function \texttt{tile\_upgrade}
+  and modified using the function \texttt{tile\_set\_upgrade}.
+
+\item One bit, as marked in \texttt{TILE\_MASK\_CONTAINS\_BOMB}, specifying
+  whether or not there is a bomb on the tile. It gets set when a player places
+  a bomb on that tile, and cleared when that bomb explodes. Additional
+  information about the bomb is stored separately. See Section~\ref{sec:bombs}.
+
+  The value of this bit can be read using the function
+  \texttt{tile\_contains\_bomb} and modified using the function
+  \texttt{tile\_set\_contains\_bomb}.
+
+\item One bit, as marked in \texttt{TILE\_MASK\_CONTAINS\_EXPLOSION},
+  specifying whether or not there is an explosion on the tile. It gets set when
+  a bomb's explosion hits the tile, and cleared when the explosion disappears
+  again. Additional information about the explosion is stored separately. See
+  Section~\ref{sec:explosions}.
+
+  The value of this bit can be read using the function
+  \texttt{tile\_contains\_explosion} and modified using the function
+  \texttt{tile\_set\_contains\_explosion}.
+
+\item Two unused bits available for later use.
+\end{itemize}
+
+\subsection{Players}
+\label{sec:players}
+
+Players, of type \texttt{player\_t}, are user-controlled entities that move
+around the world. They can place bombs, pick up upgrades, and get damaged by
+explosions. Every player is, at any point in the game, on a certain tile, but
+as you can see in Section~\ref{sec:tiles}, a tile is never marked as containing
+a player. All interaction between a player and the world is initiated from the
+side of the player, so checking whether or not a player is on the tile does not
+need to be tested efficiently.
+
+A player has a number of lives. When the tile a player is on is currently
+affected by an explosion, one of its lives will be removed and the
+\texttt{damage\_countdown} property of the player will be set. Until
+\texttt{damage\_countdown} reaches 0, the player will not be damaged.
+Furthermore, the \texttt{PLAYER\_FLAG\_SCORE\_UPDATED} flag is set on the
+player. This causes the renderer to re-render the health of the player.
+
+A player can move into any empty tile, except for ones with a bomb on them.
+When the player moves, its \texttt{movement\_countdown} is reset to its
+\texttt{movement\_default\_countdown}. Until
+\texttt{movement\_countdown} reaches 0, the player cannot move.
+
+When a player walks onto a tile containing an upgrade (See
+Section~\ref{sec:tiles}), that upgrade gets picked up. What happens depends on
+the type of the upgrade:
+
+\begin{itemize}
+\item An upgrade of type \texttt{TILE\_UPGRADE\_RANGE} causes the player's
+  \texttt{explosion\_range} to be incremented. See Section~\ref{sec:bombs}.
+\item An upgrade of type \texttt{TILE\_UPGRADE\_BOMBS} causes the player's
+  \texttt{max\_bomb\_quantity} to be incremented.
+\item An upgrade of type \texttt{TILE\_UPGRADE\_SPEED} causes the player's
+  \texttt{movement\_default\_countdown} to be decremented. The
+  \texttt{movement\_default\_countdown} will not be decremented to a value
+  lower than \texttt{PLAYER\_MIN\_DEFAULT\_MOVEMENT\_COUNTDOWN}.
+\end{itemize}
+
+Every player has an ID, which is a number between 1 and \texttt{PLAYER\_COUNT}.
+A pointer to the player with a certain ID can be retrieved using the function
+\texttt{get\_player}.
+
+There are two players in the game, as specified by \texttt{PLAYER\_COUNT}, and
+those players are initialized using the function \texttt{init\_players}. The
+\texttt{init\_players} function is called by \texttt{init\_world}, so it does
+not usually need to be called from anywhere else. The function
+\texttt{update\_world} (See Section~\ref{sec:world}) calls
+\texttt{update\_players}, which updates the relevant properties of each player.
+
+When an event (See Section~\ref{sec:events}) is generated to move a player, the
+function \texttt{handle\_events} calls the function \texttt{player\_move}. This
+function will return \texttt{true} if the player actually moved, or
+\texttt{false} if that, for some reason, wasn't possible.
+
+\subsection{Bombs}
+\label{sec:bombs}
+
+Players can place bombs on tiles. Doing so sets the
+\texttt{tile\_contains\_bomb} bit, but more information needs to be stored for
+each bomb. An array is maintained containing \texttt{BOMB\_COUNT} pre-allocated
+\texttt{bomb\_t} instances, which will be used to store this additional
+information.
+
+Because all \texttt{bomb\_t} instances are pre-allocated, there needs to be
+some way to check if such a bomb is active. That way is by checking if the
+bomb's \texttt{player} property is not \texttt{NULL}. When a bomb is placed,
+this property becomes a pointer to the \texttt{player\_t} that placed it, and
+when a bomb explodes it is reset to \texttt{NULL}.
+
+Bombs are placed using the function \texttt{place\_bomb}. It takes a
+\texttt{player\_t} instance and places the bomb at that player's location. On
+every game loop iteration, the function \texttt{update\_world} (See
+Section~\ref{sec:world}) calls \texttt{update\_bombs} in order to update all
+bombs' countdowns.
+
+When a bomb's countdown reaches 0, the function \texttt{trigger\_bomb} will
+spawn a number of \emph{explosions}. These explosions will be spawned in
+straight horizontal and vertical lines, and the amount spawned in each
+direction depends on the player's \texttt{explosion\_range}. When a
+\emph{static} tile is encountered in one direction, the spreading of explosions
+in that direction stops. When a \emph{solid} tile is encountered, an explosion
+is placed on that tile, the tile is made \emph{empty}, and further spreading in
+that direction is halted.
+
+\subsection{Explosions}
+\label{sec:explosions}
+
+Spawning an explosion sets the \texttt{tile\_contains\_explosion} bit of the
+tile the explosion is on, but some more information needs to be stored for each
+explosion. An array is maintained containing \texttt{EXPLOSION\_COUNT}
+pre-allocated \texttt{explosion\_t} instances, which will be used to store this
+additional information.
+
+An \texttt{explosion\_t} instance is very simple. It only contains a position
+and a countdown. A single tile can never have multiple active explosions on it.
+Instead, were that to happen, the function \texttt{activate\_explosion} re-uses
+the previous \texttt{explosion\_t} instance active on that tile.
+
+Explosions, aside from changing the \texttt{tile\_contains\_explosion} bit of
+the tile they're on, don't directly affect the world. Instead, the function
+\texttt{trigger\_bomb} (See Section~\ref{sec:bombs}) clears any \emph{solid}
+tiles it places an explosion on, and players (See Section~\ref{sec:players})
+determine whether they've been hit by an explosion through the
+\texttt{tile\_contains\_explosion} bit (See Section~\ref{sec:tiles}).
+
+On every game loop iteration, the function \texttt{update\_world} (See
+Section~\ref{sec:world}) calls the function \texttt{update\_explosions} in
+order to update all explosion countdowns. When such a countdown reaches 0, the
+\texttt{tile\_contains\_explosion} bit of the tile it is on is cleared, and the
+explosion is no longer considered active.
+
+\subsection{Events}
+\label{sec:events}
+
+Updates to the world should be initiated using \emph{events}. An \emph{event
+  queue} is maintained, containing instances of \texttt{event\_t}. When a user
+provides input, an event should be added to that queue using the function
+\texttt{queue\_event}. Events in the queue are handled by the function
+\texttt{handle\_events}, which calls the appropriate functions to update the
+world (See Section~\ref{sec:world}).
+
+The event queue is a pre-allocated array of \texttt{event\_t} instances, which
+will be re-used constantly. The function \texttt{handle\_events} retrieves
+events from the queue using \texttt{dequeue\_event}. After it is done
+processing the event, it calls \texttt{free\_event} to reset its values.
+
+An event contains an \emph{event type} and the \emph{ID} of the player it
+affects. See Section~\ref{sec:players}. Both of these need to be provided to
+\texttt{queue\_event}. The event type needs to be a value of type
+\texttt{event\_type\_t}, which can be either of the following:
+
+\begin{itemize}
+\item \texttt{EVENT\_TYPE\_MOVE\_UP} to move the player one tile up;
+\item \texttt{EVENT\_TYPE\_MOVE\_RIGHT} to move the player one tile to the
+  right;
+\item \texttt{EVENT\_TYPE\_MOVE\_DOWN} to move the player one tile down;
+\item \texttt{EVENT\_TYPE\_MOVE\_LEFT} to move the player one tile to the left;
+\item \texttt{EVENT\_TYPE\_PLACE\_BOMB} to make the player place a bomb at its
+  current location.
+\end{itemize}
+
+A last value of \texttt{event\_type\_t} is \texttt{EVENT\_TYPE\_PROCESSED},
+which is used by the queue to indicate that the event is inactive. It should
+never be passed to \texttt{queue\_event}.
+
+\subsection{Score}
+\label{sec:score}
+
+Every player has a certain score, which indicates how well the player is
+performing in the game. When a player performs certain actions or is affected
+by those of others, the score for that player will change. This change of score
+is implemented using the function \texttt{player\_add\_score}. When the score
+is changed, the \texttt{PLAYER\_FLAG\_SCORE\_UPDATED} flag is set on the
+player. This causes the renderer to perform a re-render of the players score.
+
+At the end of the game, each player's score is added to the list of highscores,
+on condition that it's higher than another score currently in the list.
+Highscores are stored using the type \texttt{highscores\_t}, which is a
+\emph{typedef} for an array of 16-bit unsigned integers, of length
+\texttt{HIGHSCORE\_COUNT} (5).
+
+The current list of highscores can be retrieved using the function
+\texttt{highscores\_read}. This is primarily used by the highscores screen.
+At the end of a game, the function \texttt{highscores\_add} is called with the
+score of each player. It will take care of inserting the score at the
+appropriate place in the highscores array, shifting lower scores down.
+
+Highscores are saved in \emph{EEPROM} memory, at a specific location (43). The
+byte before the highscores data is set to a \emph{magic} value, 42. If that
+byte is not equal to the magic value, it is assumed that EEPROM does not
+contain highscores. Reading from EEPROM is done using the function
+\texttt{eeprom\_read\_block}, to read the entire array into memory at once.
+Writing is similarly done using \texttt{eeprom\_write\_block}. These functions
+are provided by the AVR standard library, in the file \texttt{avr/eeprom.h}.

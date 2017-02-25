@@ -1,0 +1,148 @@
+\newcommand{\doctitle}{Technical Design \\ ~ \\ Vengabombers}
+\newcommand{\docheadtitle}{Technical Design Vengabombers}
+\newcommand{\docauthor}{
+  \renewcommand{\arraystretch}{0.5}
+  \begin{tabular}{l l}
+    Erik Nijenhuis  & {\mdseries(S1071168)} \\
+    Evan van Urk    & {\mdseries(S1071256)} \\
+    Joram Schrijver & {\mdseries(S1067040)} \\
+    Marthijn Tijmes & {\mdseries(S1063534)} \\
+    Ruben Oost      & {\mdseries(S1073664)} \\
+  \end{tabular}
+}
+
+\newcommand{\doctitlepage}{%
+  \thispagestyle{empty}
+
+  \parbox[t]{1.0\linewidth}{
+    \fontsize{40pt}{60pt}\selectfont
+    \vspace*{1.5cm}
+    \doctitle{}
+    \vspace*{1.5cm}
+  }
+
+  \vfill
+
+  {\centering \large
+    \hfill \today
+    \hfill \docauthor{}}
+
+  \normalcolor{}
+
+  \newpage
+}
+
+\providecommand{\doctitle}{Title}
+\providecommand{\docheadtitle}{Title}
+\providecommand{\docauthor}{Author}
+\providecommand{\doctype}{scrartcl}
+\providecommand{\doctitlepage}{TitlePage}
+
+\documentclass[12pt,a4paper,titlepage,parskip=full]{\doctype}
+
+\usepackage{fixltx2e}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{wallpaper}
+
+% Input and output encoding ---------------------------------------------------
+\usepackage{iftex}
+\ifPDFTeX
+   \usepackage[utf8]{inputenc}
+   \usepackage[T1]{fontenc}
+   \usepackage{lmodern}
+\else
+   \ifXeTeX
+     \usepackage{xltxtra}
+   \else
+     \usepackage{luatextra}
+   \fi
+   \defaultfontfeatures{Ligatures=TeX}
+\fi
+
+% Math
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\bag}{\langle}{\rangle}
+\DeclarePairedDelimiter{\set}{\{}{\}}
+
+% Misc
+\usepackage{marginnote}
+\usepackage[shortlabels]{enumitem}
+
+% Display
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\setlength{\headheight}{24pt}
+
+\pagestyle{fancy}
+
+\title{\doctitle}
+\author{\docauthor}
+\date{\today}
+
+\lhead{\docheadtitle}
+\rhead{\today}
+\cfoot{\thepage\ /~\pageref{LastPage}}
+%\lfoot{\docauthor}
+
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+
+\usepackage{changepage}
+
+%Other settings
+\lstset{basicstyle=\ttfamily}
+
+\begin{document}
+\doctitlepage{}
+
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+\clearpage
+\setcounter{page}{1}
+
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+
+\newpage
+\input{technical-design/intro.tex}
+
+\newpage
+\input{technical-design/libraries.tex}
+
+\newpage
+\input{technical-design/concepts.tex}
+
+\newpage
+\input{technical-design/rendering.tex}
+
+\newpage
+\input{technical-design/timeout.tex}
+
+\newpage
+\input{technical-design/hardware.tex}
+
+\newpage
+\input{technical-design/music.tex}
+
+\newpage
+\input{technical-design/textures.tex}
+
+\newpage
+\input{technical-design/menus.tex}
+
+\newpage
+\input{technical-design/bibliography.tex}
+
+\end{document}

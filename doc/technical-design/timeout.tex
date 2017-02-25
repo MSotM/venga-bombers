@@ -1,0 +1,62 @@
+\section{Timeouts}
+
+Since we are not using the Arduino library, we want an equivalent of the
+function \texttt{delay(int timeout)}, but with one difference: The delay
+function may not hang. Therefore we use a flag which indicates if the given
+time has elapsed. This will result in a small inaccuracy, because you have to
+manually check if it has elapsed, but it makes it possible to have multiple
+timeouts at the same time. This functionality is provided through the following
+function: \texttt{set\_timeout(bool *flag, int timeout)}
+
+If you want the exact same functionality as \texttt{delay}, you can achieve it
+as follows:
+
+\begin{lstlisting}[language=C,frame=single,captionpos=b,caption={A typical
+delay function}]
+/* Set a timeout of 10 seconds and let the program hang */
+bool time_has_elapsed = false;
+set_timeout(&time_has_elapsed, 61 * 10);
+while(!time_has_elapsed);
+\end{lstlisting}
+
+You shouldn't use this when playing the game, because it stops the main
+\emph{thread} of execution. However, you could use it when trying to connect
+two devices to eachother. For example:
+
+\begin{lstlisting}[language=C,frame=single,captionpos=b,caption={A typical
+timeout function}]
+/* Try to connect with another host device.
+ * Unless it takes too long to make a connection (5s) */
+bool connection_timeout = false;
+set_timeout(&connection_timeout, 61 * 5);
+ir_connect();
+while(!ir_connected())
+  if (connection_timeout) break;
+
+/* If not already connected,
+ * the device will host a connection itself */
+if (!ir_connected()) {
+  ir_host();
+  while (!ir_connected());
+}
+\end{lstlisting}
+
+
+A heap is used to manage the different timeouts. The timer interrupt will
+decrease all timeouts in the heap (time complexity $O(n)$) and check for each
+timeout if the time has elapsed. If it has, its boolean value will be set to
+true. Because popping the value from the heap can be expensive, this is not
+done in the interrupt routine. Instead the function
+\texttt{clear\_elapsed\_timeouts()} should be called from the \emph{main
+  thread}, which will remove passed timeouts from the heap.
+
+Because the heap is modified from two different \emph{threads} of execution, a
+\emph{race condition} may occur. For example, if the timer interrupt fires
+while the heap is being reordered by the expensive pop function, it sees
+incoherent data. To fix the issue, a \emph{lock} is used. While the heap is
+being reordered, a variable is set to \texttt{true}. If the interrupt fires
+during this time, it will instead increment a separate counter variable. This
+variable represents the number of times the interrupt couldn't do its job.
+Then, when the lock becomes available again, all timeouts will be decremented
+by that amount. This corrects the missed ticks, but does introduce a slightly
+less accurate timeout.

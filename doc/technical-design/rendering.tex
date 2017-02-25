@@ -1,0 +1,50 @@
+\section{Rendering}
+\label{sec:rendering}
+
+The game supports rendering to multiple devices. First and foremost the game is
+rendered to a Watterott MI0283QT9 TFT-LCD display. Second, for development
+purposes, the game can be rendered to a serial monitor using ANSI escape codes.
+Not every developer might have a display available, but all of them have a
+terminal to use a serial monitor. The method of rendering and support of
+multiple displays is explained in this section.
+
+\subsection{Incremental rendering}
+\label{sec:incremental-rendering}
+Due to the limitations of the LCD display, namely that rendering the entire
+screen takes a good half a second or so, the game has to be rendered in
+increments. Since the game is based on a grid (See Section~\ref{sec:world}) we
+can keep track of which parts of the grid have been updated and thus need to be
+rendered. The rest of the field is already drawn and can be left alone. This
+way we still achieve smooth visuals, even when rendering to both a terminal and
+the LCD display.
+
+Any action that directly affects the world sets a render update flag on the
+involved tiles indicating that those tiles need to be rendered. The
+\texttt{render} function then loops through the tiles and checks which of
+them need rendering, does so, and then resets the render update flag. The sixth
+bit, one of the leftover bits available in each tile, is used for this (See
+Section~\ref{sec:tiles}). This bit is accessed using the functions
+\texttt{tile\_needs\_render\_update} and \texttt{tile\_set\_render\_update}.
+
+\subsection{Multiple displays}
+\label{sec:rendering-code}
+The file \texttt{game.h} has function definitions for setting up rendering and
+actually rendering. These are \texttt{init\_render}, \texttt{render},
+\texttt{init\_lcd\_display}, \texttt{render\_to\_lcd},
+\texttt{init\_terminal\_display} and \texttt{render\_to\_terminal}.
+
+These are implemented in \texttt{render.c}, \texttt{lcd-renderer.c} and
+\texttt{terminal-renderer.c} respectively. The \texttt{init\_render} and
+\texttt{render} functions call the LCD and terminal rendering functions,
+depending on whether \texttt{RENDER\_LCD} and/or \texttt{RENDER\_TERMINAL} are
+defined in the file \texttt{options.h}.
+
+The \texttt{render} function accepts a boolean to force rendering of all
+tiles regardless of whether the render update flag has been set for any of the
+tiles. This is used to render the initial playing field before the game starts.
+
+Communication with the LCD display is done using \texttt{pleasant-lcd}, while
+communication with the serial monitors happens through USART using
+\texttt{pleasant-usart}, both of which are from the \texttt{pleasant-uno-avr}
+library (See Section~\ref{libraries}).
+

@@ -1,0 +1,64 @@
+\section{Music}
+
+One of the reasons the project name was chosen to be ``Venga Bombers'', is that
+the `Venga Boys'\cite{venga-boys} have a song called ``Boom, Boom, Boom,
+Boom!!''. This seemed appropriate, but only if we could somehow include the
+song in the game. We have managed to play the main melody during the game.
+Including more then one voice was deemed impossible due to the limited number
+of timers available (see Section~\ref{sec:music-timer}). One problem we
+encountered when trying to include the song is that only a limited amount of
+memory is available. This was resolved by using a particular encoding for notes
+(see Section~\ref{sec:music-memory}).
+
+
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]
+  {res/boom.png}
+
+\subsection{Timer Management}
+\label{sec:music-timer}
+We used a timer to generate tones by flipping a certain pin high and low. To
+achieve a specific hertz frequency, the timer can use varying prescaler and
+compare registry values. For most timer uses one would set a suitable prescaler
+and change only the timer compare registry values, but not every tone can be
+timed perfectly with any particular prescaler. Thus, both settings are changed
+for every tone generated.
+
+First we have to take into consideration that the Arduino Uno has a
+clock frequency of 16MHz.
+$$CPU\_CLK = 16 \cdot 10^6$$
+
+To come up with the right prescaler we simply calculate the interval with a
+given prescaler and check if it fits in a byte, the size of OCR.
+
+$$OCR = prescaler \cdot \frac{CPU\_CLK}{freq \cdot 2}$$
+
+Note that the frequency is doubled due to the fact that the timer needs to
+alternate the pin output twice, namely high and low.
+
+If the frequency is not suitable for any kind of prescaler it will generate
+a tone as high as possible.
+
+The prescaler of the timer can differ from tone to tone, thus making it
+unsuitable for reuse.
+
+\newpage
+\subsection{Memory Management}
+\label{sec:music-memory}
+When inserting a song on the Arduino you will quickly find out that it
+simply does not fit. Therefore we came up with the following compression
+strategy.
+
+We have analysed the song and concluded that it uses six distinct rhythm
+symbols and thirteen distinct tones. If we enumerate these things
+seperately, then the tones can fit in 4 bits (16 possibilities) and the rhythm
+symbols in 3 bits (8 possibilities). Therefore we can compress a tone and
+duration into a single byte while leaving one bit unused. Even though it's
+a rather simple solution, it's still effective enough to compress the entire
+song into 239 bytes.
+
+
+The encoding could, if required later, be extended to use the unused bit.
+The bit might then, for example, act as a flag to indicate that the remaining 7
+bits are to be interpreted as an index into an existing array of notes. This
+will tremendously decrease the size when having many repeated sequences in
+the song.
